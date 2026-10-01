@@ -1,1 +1,320 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giappone monitor</title>
+<meta name="description" content="Monitoraggio prezzi voli Italia–Tokyo e tour Sivola, gennaio 2027">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f6f5f2; --surface:#fcfcfb; --border:#e4e2dc; --grid:#ecebe6;
+  --text:#0b0b0b; --text-2:#52514e; --muted:#7a7873; --link:#1c5cab;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
+  --warn-bg:#fff4e0; --warn-text:#7a4b00; --good:#0f7a3a; --bad:#b3261e;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#121211; --surface:#1a1a19; --border:#2e2e2b; --grid:#2a2a27;
+    --text:#ffffff; --text-2:#c3c2b7; --muted:#8f8e86; --link:#86b6ef;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
+    --warn-bg:#3a2c12; --warn-text:#f2c46b; --good:#5cc98a; --bad:#ff8a80;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#121211; --surface:#1a1a19; --border:#2e2e2b; --grid:#2a2a27;
+  --text:#ffffff; --text-2:#c3c2b7; --muted:#8f8e86; --link:#86b6ef;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
+  --warn-bg:#3a2c12; --warn-text:#f2c46b; --good:#5cc98a; --bad:#ff8a80;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 48px}
+header h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+header p{margin:0;color:var(--text-2)}
+a{color:var(--link)}
+section{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:20px;margin-top:20px}
+h2{font-size:17px;margin:0 0 4px}
+.sub{color:var(--text-2);font-size:13px;margin:0 0 14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.kpi .lab{font-size:13px;color:var(--text-2)}
+.kpi .val{font-size:28px;font-weight:650;margin:2px 0;font-variant-numeric:tabular-nums}
+.kpi .det{font-size:13px;color:var(--muted)}
+.delta-down{color:var(--good);font-weight:600}
+.delta-up{color:var(--bad);font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.controls button{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;
+  border:1px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer}
+.controls button[aria-pressed="true"]{background:var(--text);color:var(--surface);border-color:var(--text)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--text-2);margin-bottom:6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-size:12px;fill:var(--muted)}
+.chart .lbl{font-size:12px;fill:var(--text-2);font-weight:600}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.12);
+  opacity:0;transition:opacity .1s;min-width:170px;z-index:2}
+.tip b{display:block;margin-bottom:4px}
+.tip div{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.tip i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+details{margin-top:10px;font-size:13px}
+summary{cursor:pointer;color:var(--text-2)}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-weight:600;color:var(--text-2);font-size:12.5px;white-space:nowrap}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+tr:last-child td{border-bottom:0}
+.warn{display:inline-block;white-space:normal;background:var(--warn-bg);color:var(--warn-text);border-radius:4px;
+  padding:0 5px;font-size:12px;margin-top:2px}
+.nowrap{white-space:nowrap}
+.note{font-size:13px;color:var(--text-2);margin:12px 0 0}
+footer{color:var(--muted);font-size:12.5px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Giappone monitor</h1>
+  <p>Voli Italia → Tokyo (1 adulto, economy, 7–20 gennaio 2027) e tour Sivola. Ultimo aggiornamento: <b id="upd"></b>.</p>
+</header>
 
+<div class="kpis" id="kpis"></div>
+
+<section>
+  <h2>Andamento del prezzo minimo per città di partenza</h2>
+  <p class="sub">Prezzo andata+ritorno in EUR. Il 30/09 era monitorato solo Kiwi (intervallo date); dal 01/10 anche lastminute, GoVola e Turkish.</p>
+  <div class="controls" role="group" aria-label="Serie da mostrare">
+    <button data-mode="min" aria-pressed="true">Minimo tra tutte le fonti</button>
+    <button data-mode="kiwi" aria-pressed="false">Solo Kiwi (intervallo date)</button>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
+  <details><summary>Mostra i dati in tabella</summary><div class="tw" id="chartTable"></div></details>
+</section>
+
+<section>
+  <h2>Migliori offerte per città (7–20 gen)</h2>
+  <p class="sub">Il prezzo più basso trovato oggi per ciascuna partenza. ⚠️ = viaggio oltre 24h, scalo notturno o biglietti separati.</p>
+  <div class="tw" id="best"></div>
+  <p class="note">I prezzi lastminute e GoVola possono escludere il bagaglio o dipendere dal metodo di pagamento: vanno verificati al checkout.</p>
+</section>
+
+<section>
+  <h2>Confronto fonti (7–20 gen)</h2>
+  <p class="sub">Prezzo più basso per fonte. SlickTrip quota in dollari USD.</p>
+  <div class="tw" id="sources"></div>
+</section>
+
+<section>
+  <h2>Tour Sivola “Giappone: geishe, templi e samurai”</h2>
+  <p class="sub">Partenze tra il 18/12/2026 e il 31/01/2027. <a href="https://www.sivola.it/viaggi/giappone-geishe-templi-e-samurai" target="_blank" rel="noopener">Pagina del viaggio</a></p>
+  <div class="tw" id="sivola"></div>
+</section>
+
+<footer>Dati raccolti automaticamente da Kiwi.com, lastminute.com, GoVola, SlickTrip, Turkish Airlines e Sivola. Prezzi indicativi, soggetti a variazione.</footer>
+</div>
+
+<script>
+/* ====== DATI: aggiorna qui ====== */
+const UPDATED = "2026-10-01";
+
+/* Storico: un record per rilevazione (data, città, fonte, ricerca, prezzo EUR) */
+const HISTORY = [
+  {d:"2026-09-30", o:"Milano",  f:"Kiwi", r:"intervallo", eur:638},
+  {d:"2026-09-30", o:"Roma",    f:"Kiwi", r:"intervallo", eur:754},
+  {d:"2026-09-30", o:"Bologna", f:"Kiwi", r:"intervallo", eur:870},
+  {d:"2026-09-30", o:"Venezia", f:"Kiwi", r:"intervallo", eur:814},
+  {d:"2026-09-30", o:"Verona",  f:"Kiwi", r:"intervallo", eur:847},
+
+  {d:"2026-10-01", o:"Milano",  f:"Kiwi", r:"intervallo", eur:641},
+  {d:"2026-10-01", o:"Roma",    f:"Kiwi", r:"intervallo", eur:758},
+  {d:"2026-10-01", o:"Bologna", f:"Kiwi", r:"intervallo", eur:788},
+  {d:"2026-10-01", o:"Venezia", f:"Kiwi", r:"intervallo", eur:815},
+  {d:"2026-10-01", o:"Verona",  f:"Kiwi", r:"intervallo", eur:845},
+  {d:"2026-10-01", o:"Milano",  f:"Kiwi", r:"fissa", eur:641},
+  {d:"2026-10-01", o:"Roma",    f:"Kiwi", r:"fissa", eur:799},
+  {d:"2026-10-01", o:"Bologna", f:"Kiwi", r:"fissa", eur:839},
+  {d:"2026-10-01", o:"Venezia", f:"Kiwi", r:"fissa", eur:822},
+  {d:"2026-10-01", o:"Verona",  f:"Kiwi", r:"fissa", eur:769},
+  {d:"2026-10-01", o:"Milano",  f:"lastminute", r:"fissa", eur:562.52},
+  {d:"2026-10-01", o:"Roma",    f:"lastminute", r:"fissa", eur:636.08},
+  {d:"2026-10-01", o:"Bologna", f:"lastminute", r:"fissa", eur:855.42},
+  {d:"2026-10-01", o:"Venezia", f:"lastminute", r:"fissa", eur:563.53},
+  {d:"2026-10-01", o:"Verona",  f:"lastminute", r:"fissa", eur:1033.45},
+  {d:"2026-10-01", o:"Milano",  f:"GoVola", r:"fissa", eur:560.42},
+  {d:"2026-10-01", o:"Roma",    f:"GoVola", r:"fissa", eur:614.17},
+  {d:"2026-10-01", o:"Milano",  f:"Turkish", r:"fissa", eur:769.86},
+  {d:"2026-10-01", o:"Roma",    f:"Turkish", r:"fissa", eur:770.31},
+  {d:"2026-10-01", o:"Bologna", f:"Turkish", r:"fissa", eur:769.92},
+  {d:"2026-10-01", o:"Venezia", f:"Turkish", r:"fissa", eur:769.76}
+];
+
+const GF = (a,b,d1,d2)=>`https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20${a}%20to%20${b}%20on%20${d1}%20through%20${d2}`;
+const LM = {
+  MIL:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=MIL&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902938465331200&mac=824902938465331200SCHv011279582245&acntb=flight&utm_term=MILTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=562520&jC=562520_EUR&cp=0",
+  ROM:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=ROM&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902942071126016&mac=824902942071126016SCHv01923698567&acntb=flight&utm_term=ROMTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=636080&jC=636080_EUR&cp=0",
+  BLQ:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=BLQ&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902947862202368&mac=824902947862202368SCHv011042370852&acntb=flight&utm_term=BLQTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=855420&jC=855420_EUR&cp=0",
+  VCE:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=VCE&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902951951607808&mac=824902951951607808SCHv011023308558&acntb=flight&utm_term=VCETYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=563530&jC=563530_EUR&cp=0",
+  VRN:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=VRN&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902956749879296&mac=824902956749879296SCHv01-537224320&acntb=flight&utm_term=VRNTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=1033450&jC=1033450_EUR&cp=0"
+};
+const ST = k=>`https://slicktrip.com/flights?key=${k}%3BTYOA%3Beconomy%3B1%3B2027-01-07%3B2027-01-20&src=claude&utm_source=claude&utm_medium=mcp&utm_campaign=assistant`;
+
+/* Migliori offerte (una per città) */
+const BEST = [
+  {o:"Milano", p:560.42, f:"GoVola", a:"07/01 19:15 MXP → 09/01 14:25 HND", r:"20/01 19:30 NRT → 21/01 07:15 MXP",
+   dur:"35h10 / 19h45", warn:"andata >24h, notte a Pechino", sc:"Pechino (PKX→PEK) / Shanghai", bag:"non indicato", link:null, gf:GF("MXP","HND","2027-01-07","2027-01-20"),
+   note:"Alternativa più comoda: Kiwi 641 € (17h55 / 17h30, stiva inclusa)", alt:"https://kiwi.com/u/jxtuby"},
+  {o:"Roma", p:614.17, f:"GoVola", a:"07/01 19:50 FCO → 08/01 21:30 HND", r:"20/01 08:30 HND → 17:50 FCO",
+   dur:"17h40 / 17h20", warn:null, sc:"Pechino / Pechino", bag:"non indicato", link:null, gf:GF("FCO","HND","2027-01-07","2027-01-20")},
+  {o:"Bologna", p:769.92, f:"Turkish", a:"07/01 19:25 BLQ → 08/01 19:45 HND", r:"20/01 10:10 NRT → 21/01 13:50 BLQ",
+   dur:"16h20 / 35h40", warn:"ritorno >24h, notte a Istanbul", sc:"Istanbul / Istanbul", bag:"stiva 23 kg", link:null, gf:GF("BLQ","HND","2027-01-07","2027-01-20")},
+  {o:"Venezia", p:563.53, f:"lastminute", a:"07/01 21:15 VCE → 08/01 21:30 HND", r:"20/01 21:00 HND → 21/01 19:00 VCE",
+   dur:"16h15 / 30h00", warn:"ritorno >24h", sc:"non indicato", bag:"non indicato", link:LM.VCE, gf:GF("VCE","HND","2027-01-07","2027-01-20")},
+  {o:"Verona", p:769, f:"Kiwi", a:"07/01 23:25 VRN → 09/01 22:40 HND", r:"20/01 10:30 HND → 21/01 20:15 VRN",
+   dur:"39h15 / 41h45", warn:"biglietti separati, 3 scali", sc:"Tirana, Istanbul, Kuala Lumpur / Delhi, Londra", bag:"nessuno", link:"https://kiwi.com/u/hm8q85", gf:GF("VRN","HND","2027-01-07","2027-01-20")}
+];
+
+/* Confronto fonti: [prezzo, link] ; null = nessun risultato */
+const SOURCES = [
+  {o:"Milano",  kiwi:[641,"https://kiwi.com/u/jxtuby"], lm:[562.52,LM.MIL], gv:[560.42,null], st:[771,ST("MILA")], tk:[769.86,null]},
+  {o:"Roma",    kiwi:[799,"https://kiwi.com/u/3yn4w8"], lm:[636.08,LM.ROM], gv:[614.17,null], st:[699,ST("ROME")], tk:[770.31,null]},
+  {o:"Bologna", kiwi:[839,"https://kiwi.com/u/cqtt7m"], lm:[855.42,LM.BLQ], gv:"nessun risultato", st:[872,ST("BLQ")], tk:[769.92,null]},
+  {o:"Venezia", kiwi:[822,"https://kiwi.com/u/yyk3ru"], lm:[563.53,LM.VCE], gv:"non cercato", st:[872,ST("VCE")], tk:[769.76,null]},
+  {o:"Verona",  kiwi:[769,"https://kiwi.com/u/hm8q85"], lm:[1033.45,LM.VRN], gv:"non cercato", st:[1136,ST("VRN")], tk:"nessun risultato"}
+];
+
+const SIVOLA = [
+  {p:"18/12/2026", r:"30/12/2026", c:"Roma", e:3390, a:"18-40", s:"Disponibile", t:"FOLIAGE"},
+  {p:"28/12/2026", r:"09/01/2027", c:"Roma", e:3590, a:"18-40", s:"Disponibile"},
+  {p:"29/12/2026", r:"10/01/2027", c:"Milano", e:3590, a:"18-40", s:"Disponibile"},
+  {p:"29/12/2026", r:"10/01/2027", c:"Milano", e:3590, a:"18-50", s:"Disponibile"},
+  {p:"30/12/2026", r:"11/01/2027", c:"Milano", e:3590, a:"18-40", s:"Disponibile"},
+  {p:"16/01/2027", r:"28/01/2027", c:"Milano", e:3190, a:"18-40", s:"Disponibile"},
+  {p:"31/01/2027", r:"12/02/2027", c:"Milano", e:3190, a:"18-40", s:"Disponibile"}
+];
+/* ====== fine dati ====== */
+
+const ORIGINS = ["Milano","Roma","Bologna","Venezia","Verona"];
+const COLOR = {Milano:"var(--s1)",Roma:"var(--s2)",Bologna:"var(--s3)",Venezia:"var(--s4)",Verona:"var(--s5)"};
+const eur = v => v.toLocaleString("it-IT",{minimumFractionDigits: v%1?2:0, maximumFractionDigits:2})+" €";
+const usd = v => "$"+v.toLocaleString("it-IT");
+const fmtD = d => { const [y,m,g]=d.split("-"); return `${g}/${m}`; };
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const a = (url,txt) => url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${txt}</a>` : "—";
+
+document.getElementById("upd").textContent = new Date(UPDATED).toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
+
+/* serie per il grafico */
+function series(mode){
+  const dates=[...new Set(HISTORY.map(h=>h.d))].sort();
+  return {dates, lines: ORIGINS.map(o=>({o, pts: dates.map(d=>{
+    const rows=HISTORY.filter(h=>h.d===d&&h.o===o&&(mode==="min"||(h.f==="Kiwi"&&h.r==="intervallo")));
+    if(!rows.length) return null;
+    const m=rows.reduce((x,y)=>y.eur<x.eur?y:x);
+    return {d, v:m.eur, f:m.f};
+  })}))};
+}
+
+/* KPI */
+(function(){
+  const s=series("min"), last=s.dates.at(-1), prev=s.dates.at(-2);
+  const cur=s.lines.map(l=>({o:l.o,...l.pts.at(-1)})).filter(x=>x.v!=null).reduce((x,y)=>y.v<x.v?y:x);
+  const prevMin=prev?Math.min(...s.lines.map(l=>l.pts.at(-2)?.v).filter(v=>v!=null)):null;
+  let delta="";
+  if(prevMin){const d=cur.v-prevMin,pc=d/prevMin*100;
+    delta=`<span class="${d<0?"delta-down":"delta-up"}">${d<0?"▼":"▲"} ${eur(Math.abs(+d.toFixed(2)))} (${pc.toFixed(1).replace(".",",")}%)</span> rispetto al ${fmtD(prev)}`;}
+  const bag=BEST.filter(b=>b.bag.startsWith("stiva"));
+  document.getElementById("kpis").innerHTML=`
+    <div class="kpi"><div class="lab">Prezzo più basso oggi</div><div class="val">${eur(cur.v)}</div>
+      <div class="det">${cur.o} · ${cur.f}<br>${delta}</div></div>
+    <div class="kpi"><div class="lab">Miglior volo comodo con stiva</div><div class="val">641 €</div>
+      <div class="det">Milano · Kiwi · Air China, 1 scalo<br>circa 18h per tratta</div></div>
+    <div class="kpi"><div class="lab">Tour Sivola</div><div class="val">da 3.190 €</div>
+      <div class="det">${SIVOLA.length} partenze, tutte “${SIVOLA[0].s}”<br>nessuna variazione</div></div>`;
+})();
+
+/* Grafico */
+const chartEl=document.getElementById("chart"), tip=document.getElementById("tip");
+function draw(mode){
+  const {dates,lines}=series(mode);
+  const W=Math.max(320,chartEl.clientWidth||900),H=W<600?280:340,m={t:16,r:W<600?118:130,b:36,l:W<600?48:56};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const vals=lines.flatMap(l=>l.pts.filter(Boolean).map(p=>p.v));
+  let lo=Math.floor((Math.min(...vals)-40)/100)*100, hi=Math.ceil((Math.max(...vals)+40)/100)*100;
+  const x=i=> dates.length===1? m.l+iw/2 : m.l+i*iw/(dates.length-1);
+  const y=v=> m.t+ih-(v-lo)/(hi-lo)*ih;
+  let g="";
+  for(let v=lo; v<=hi; v+=100){
+    g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`+
+       `<text x="${m.l-8}" y="${y(v)+4}" text-anchor="end">${v.toLocaleString("it-IT")} €</text>`;
+  }
+  dates.forEach((d,i)=> g+=`<text x="${x(i)}" y="${H-12}" text-anchor="middle">${fmtD(d)}</text>`);
+  // linee
+  lines.forEach(l=>{
+    const p=l.pts.map((pt,i)=>pt?[x(i),y(pt.v)]:null);
+    let path="",pen=false;
+    p.forEach(q=>{ if(!q){pen=false;return;} path+=(pen?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1); pen=true; });
+    g+=`<path d="${path}" fill="none" stroke="${COLOR[l.o]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    p.forEach(q=>{ if(q) g+=`<circle cx="${q[0]}" cy="${q[1]}" r="4.5" fill="${COLOR[l.o]}" stroke="var(--surface)" stroke-width="2"/>`; });
+  });
+  // etichette dirette a fine linea, con anti-collisione
+  const ends=lines.map(l=>{const i=l.pts.length-1;return l.pts[i]?{o:l.o,v:l.pts[i].v,y:y(l.pts[i].v)}:null}).filter(Boolean).sort((a,b)=>a.y-b.y);
+  for(let i=1;i<ends.length;i++) if(ends[i].y-ends[i-1].y<16) ends[i].y=ends[i-1].y+16;
+  ends.forEach(e=> g+=`<text class="lbl" x="${x(dates.length-1)+12}" y="${e.y+4}">${e.o} ${eur(e.v)}</text>`);
+  g+=`<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${m.t+ih}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`;
+  g+=`<rect id="hit" x="${m.l-20}" y="${m.t}" width="${iw+40}" height="${ih}" fill="transparent"/>`;
+  chartEl.querySelectorAll("svg").forEach(s=>s.remove());
+  chartEl.insertAdjacentHTML("afterbegin",`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Andamento del prezzo minimo per città">${g}</svg>`);
+  const svg=chartEl.querySelector("svg"), xh=svg.querySelector("#xh");
+  const show=(clientX)=>{
+    const r=svg.getBoundingClientRect(), sx=(clientX-r.left)*W/r.width;
+    let i=dates.length===1?0:Math.round((sx-m.l)/(iw/(dates.length-1)));
+    i=Math.max(0,Math.min(dates.length-1,i));
+    xh.setAttribute("x1",x(i)); xh.setAttribute("x2",x(i)); xh.setAttribute("opacity",1);
+    const rows=lines.map(l=>({o:l.o,p:l.pts[i]})).filter(r=>r.p).sort((a,b)=>a.p.v-b.p.v);
+    tip.innerHTML=`<b>${fmtD(dates[i])}</b>`+rows.map(r=>`<div><span><i style="background:${COLOR[r.o]}"></i>${r.o}</span><span>${eur(r.p.v)} <small style="color:var(--muted)">${r.p.f}</small></span></div>`).join("");
+    tip.style.opacity=1;
+    const px=x(i)*r.width/W, tw=tip.offsetWidth;
+    tip.style.left=Math.min(Math.max(px+12, 0), r.width-tw)+"px";
+    if(px+12+tw>r.width) tip.style.left=Math.max(px-tw-12,0)+"px";
+    tip.style.top="8px";
+  };
+  const hide=()=>{tip.style.opacity=0; xh.setAttribute("opacity",0);};
+  const hit=svg.querySelector("#hit");
+  hit.addEventListener("pointermove",e=>show(e.clientX));
+  hit.addEventListener("pointerleave",hide);
+  // legenda e tabella
+  document.getElementById("legend").innerHTML=ORIGINS.map(o=>`<span><i style="background:${COLOR[o]}"></i>${o}</span>`).join("");
+  document.getElementById("chartTable").innerHTML=`<table><thead><tr><th>Data</th>${ORIGINS.map(o=>`<th>${o}</th>`).join("")}</tr></thead><tbody>`+
+    dates.map((d,i)=>`<tr><td>${fmtD(d)}</td>${lines.map(l=>`<td class="num">${l.pts[i]?eur(l.pts[i].v)+` <small style="color:var(--muted);font-weight:400">${l.pts[i].f}</small>`:"—"}</td>`).join("")}</tr>`).join("")+`</tbody></table>`;
+}
+document.querySelectorAll(".controls button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".controls button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  MODE=b.dataset.mode;draw(MODE);
+}));
+let MODE="min";draw(MODE);let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>draw(MODE),150)});
+
+/* Tabelle */
+document.getElementById("best").innerHTML=`<table><thead><tr><th>Città</th><th>Prezzo</th><th>Andata / Ritorno</th><th>Durata A/R</th><th>Scali</th><th>Bagaglio</th><th>Link</th></tr></thead><tbody>`+
+  BEST.map(b=>`<tr><td><b>${b.o}</b></td><td><span class="num">${eur(b.p)}</span><br><small style="color:var(--text-2)">${b.f}</small></td>
+  <td><span class="nowrap">${b.a}</span><br><span class="nowrap">${b.r}</span></td>
+  <td><span class="nowrap">${b.dur}</span>${b.warn?`<br><span class="warn">⚠️ ${b.warn}</span>`:""}</td><td>${b.sc}</td><td>${b.bag}</td>
+  <td class="nowrap">${b.link?a(b.link,"Offerta")+"<br>":""}${a(b.gf,"Google Flights")}${b.alt?`<br><small>${a(b.alt,"Alt. Kiwi 641 €")}</small>`:""}</td></tr>`).join("")+`</tbody></table>`;
+
+const cell=(v,fmt)=> typeof v==="string" ? `<span style="color:var(--muted)">${v}</span>` : `<span class="num">${fmt(v[0])}</span>${v[1]?" · "+a(v[1],"apri"):""}`;
+document.getElementById("sources").innerHTML=`<table><thead><tr><th>Città</th><th>Kiwi</th><th>lastminute</th><th>GoVola</th><th>SlickTrip (USD)</th><th>Turkish</th></tr></thead><tbody>`+
+  SOURCES.map(s=>`<tr><td><b>${s.o}</b></td><td>${cell(s.kiwi,eur)}</td><td>${cell(s.lm,eur)}</td><td>${cell(s.gv,eur)}</td><td>${cell(s.st,usd)}</td><td>${cell(s.tk,eur)}</td></tr>`).join("")+`</tbody></table>`;
+
+document.getElementById("sivola").innerHTML=`<table><thead><tr><th>Partenza</th><th>Ritorno</th><th>Città</th><th>Prezzo</th><th>Età</th><th>Stato</th></tr></thead><tbody>`+
+  SIVOLA.map(s=>`<tr><td class="nowrap">${s.p}${s.t?` <span class="warn">${s.t}</span>`:""}</td><td class="nowrap">${s.r}</td><td>${s.c}</td><td class="num">${eur(s.e)}</td><td>${s.a}</td><td>${s.s}</td></tr>`).join("")+`</tbody></table>`;
+</script>
+</body>
+</html>

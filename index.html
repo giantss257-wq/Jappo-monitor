@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Giappone monitor</title>
-<meta name="description" content="Monitoraggio prezzi voli Italia–Tokyo e tour Sivola, gennaio 2027">
+<meta name="description" content="Monitoraggio prezzi voli Italia–Tokyo e tour Sivola, inverno 2026/27">
 <style>
 :root{
   color-scheme: light;
@@ -30,27 +30,23 @@
   --warn-bg:#3a2c12; --warn-text:#f2c46b; --good:#5cc98a; --bad:#ff8a80;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-  font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 48px}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
 header h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
 header p{margin:0;color:var(--text-2)}
 a{color:var(--link)}
-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  padding:20px;margin-top:20px}
+section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:20px}
 h2{font-size:17px;margin:0 0 4px}
 .sub{color:var(--text-2);font-size:13px;margin:0 0 14px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:20px}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
 .kpi .lab{font-size:13px;color:var(--text-2)}
 .kpi .val{font-size:28px;font-weight:650;margin:2px 0;font-variant-numeric:tabular-nums}
 .kpi .det{font-size:13px;color:var(--muted)}
-.delta-down{color:var(--good);font-weight:600}
-.delta-up{color:var(--bad);font-weight:600}
-.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-.controls button{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;
-  border:1px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer}
-.controls button[aria-pressed="true"]{background:var(--text);color:var(--surface);border-color:var(--text)}
+.down{color:var(--good);font-weight:600}.up{color:var(--bad);font-weight:600}
+.tabs,.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tabs button,.controls button{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer}
+.tabs button[aria-pressed="true"],.controls button[aria-pressed="true"]{background:var(--text);color:var(--surface);border-color:var(--text)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--text-2);margin-bottom:6px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
@@ -58,12 +54,11 @@ h2{font-size:17px;margin:0 0 4px}
 .chart svg{display:block;width:100%;height:auto;overflow:visible}
 .chart text{font-size:12px;fill:var(--muted)}
 .chart .lbl{font-size:12px;fill:var(--text-2);font-weight:600}
-.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--border);
-  border-radius:8px;padding:8px 10px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.12);
-  opacity:0;transition:opacity .1s;min-width:170px;z-index:2}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.12);opacity:0;transition:opacity .1s;min-width:180px;z-index:2}
 .tip b{display:block;margin-bottom:4px}
 .tip div{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
 .tip i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+.empty{color:var(--muted);font-size:14px;padding:24px 0;text-align:center}
 details{margin-top:10px;font-size:13px}
 summary{cursor:pointer;color:var(--text-2)}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -72,9 +67,9 @@ th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);ver
 th{font-weight:600;color:var(--text-2);font-size:12.5px;white-space:nowrap}
 .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
 tr:last-child td{border-bottom:0}
-.warn{display:inline-block;white-space:normal;background:var(--warn-bg);color:var(--warn-text);border-radius:4px;
-  padding:0 5px;font-size:12px;margin-top:2px}
+.warn{display:inline-block;background:var(--warn-bg);color:var(--warn-text);border-radius:4px;padding:0 5px;font-size:12px;margin-top:2px}
 .nowrap{white-space:nowrap}
+small.m{color:var(--muted)}
 .note{font-size:13px;color:var(--text-2);margin:12px 0 0}
 footer{color:var(--muted);font-size:12.5px;margin-top:24px}
 </style>
@@ -83,33 +78,32 @@ footer{color:var(--muted);font-size:12.5px;margin-top:24px}
 <div class="wrap">
 <header>
   <h1>Giappone monitor</h1>
-  <p>Voli Italia → Tokyo (1 adulto, economy, 7–20 gennaio 2027) e tour Sivola. Ultimo aggiornamento: <b id="upd"></b>.</p>
+  <p>Voli Italia → Tokyo (1 adulto, economy, andata e ritorno ~2 settimane) e tour Sivola. Ultimo aggiornamento: <b id="upd"></b>.</p>
 </header>
 
 <div class="kpis" id="kpis"></div>
 
 <section>
   <h2>Andamento del prezzo minimo per città di partenza</h2>
-  <p class="sub">Prezzo andata+ritorno in EUR. Il 30/09 era monitorato solo Kiwi (intervallo date); dal 01/10 anche lastminute, GoVola e Turkish.</p>
-  <div class="controls" role="group" aria-label="Serie da mostrare">
-    <button data-mode="min" aria-pressed="true">Minimo tra tutte le fonti</button>
-    <button data-mode="kiwi" aria-pressed="false">Solo Kiwi (intervallo date)</button>
-  </div>
+  <p class="sub">Prezzo andata+ritorno in EUR, minimo tra le fonti in EUR per ciascun giorno di rilevazione.</p>
+  <div class="controls" id="chartModes" role="group" aria-label="Periodo"></div>
   <div class="legend" id="legend"></div>
   <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
   <details><summary>Mostra i dati in tabella</summary><div class="tw" id="chartTable"></div></details>
 </section>
 
 <section>
-  <h2>Migliori offerte per città (7–20 gen)</h2>
-  <p class="sub">Il prezzo più basso trovato oggi per ciascuna partenza. ⚠️ = viaggio oltre 24h, scalo notturno o biglietti separati.</p>
+  <h2>Migliori offerte per città</h2>
+  <p class="sub" id="bestSub"></p>
+  <div class="tabs" id="bestTabs" role="group" aria-label="Periodo"></div>
   <div class="tw" id="best"></div>
-  <p class="note">I prezzi lastminute e GoVola possono escludere il bagaglio o dipendere dal metodo di pagamento: vanno verificati al checkout.</p>
+  <p class="note">⚠️ = viaggio oltre 24h, scalo notturno o biglietti separati. I prezzi lastminute e GoVola possono escludere il bagaglio o dipendere dal metodo di pagamento: vanno verificati al checkout.</p>
 </section>
 
 <section>
-  <h2>Confronto fonti (7–20 gen)</h2>
-  <p class="sub">Prezzo più basso per fonte. SlickTrip quota in dollari USD.</p>
+  <h2>Confronto fonti</h2>
+  <p class="sub">Prezzo più basso di oggi per fonte e città. SlickTrip quota in dollari USD.</p>
+  <div class="tabs" id="srcTabs" role="group" aria-label="Periodo"></div>
   <div class="tw" id="sources"></div>
 </section>
 
@@ -123,198 +117,166 @@ footer{color:var(--muted);font-size:12.5px;margin-top:24px}
 </div>
 
 <script>
-/* ====== DATI: aggiorna qui ====== */
-const UPDATED = "2026-10-01";
+/* I dati vengono inseriti automaticamente ad ogni run. Non modificare a mano. */
+const DATA = /*__DATA__*/{"updated": "2026-10-01", "rows": [{"t": "Milan – Kiwi – feste", "tipo": "Volo", "f": "Kiwi", "r": "Feste 20 dic-10 gen", "eur": 918, "usd": null, "and": "2026-12-21 21:10 BGY → 2026-12-23 14:05 HND", "rit": "2027-01-05 10:30 HND → 2027-01-06 14:15 MXP", "da": "32h55", "dr": "35h45", "cs": "A: Budapest, Istanbul, Pechino (PKX); R: Nuova Delhi, Tel Aviv", "bag": "__NO__", "link": "https://kiwi.com/u/x9kyd89", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20BGY%20to%20HND%20on%202026-12-21%20through%202027-01-05", "note": "Biglietti separati/self-transfer, notte a Budapest, solo bagaglio personale."}, {"t": "Rome – Kiwi – feste", "tipo": "Volo", "f": "Kiwi", "r": "Feste 20 dic-10 gen", "eur": 914, "usd": null, "and": "2026-12-25 21:30 FCO → 2026-12-27 14:05 HND", "rit": "2027-01-10 10:30 HND → 2027-01-11 14:05 FCO", "da": "32h35", "dr": "35h35", "cs": "A: Budapest, Istanbul, Pechino (PKX); R: Nuova Delhi, Tel Aviv", "bag": "__NO__", "link": "https://kiwi.com/u/3u44py", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20FCO%20to%20HND%20on%202026-12-25%20through%202027-01-10", "note": "Biglietti separati/self-transfer, notti a Budapest e Delhi."}, {"t": "Bologna – Kiwi – feste", "tipo": "Volo", "f": "Kiwi", "r": "Feste 20 dic-10 gen", "eur": 1016, "usd": null, "and": "2026-12-21 15:40 BLQ → 2026-12-23 14:05 HND", "rit": "2027-01-07 19:30 NRT → 2027-01-08 15:00 BLQ", "da": "38h25", "dr": "27h30", "cs": "A: Budapest, Istanbul, Pechino (PKX); R: Shanghai, Londra (LGW→STN)", "bag": "__NO__", "link": "https://kiwi.com/u/dqzkxv", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20BLQ%20to%20HND%20on%202026-12-21%20through%202027-01-07", "note": "Self-transfer con cambio aeroporto a Londra."}, {"t": "Venice – Kiwi – feste", "tipo": "Volo", "f": "Kiwi", "r": "Feste 20 dic-10 gen", "eur": 925, "usd": null, "and": "2026-12-25 15:45 VCE → 2026-12-27 14:05 HND", "rit": "2027-01-10 10:30 HND → 2027-01-11 13:55 VCE", "da": "38h20", "dr": "35h25", "cs": "A: Budapest, Istanbul, Pechino (PKX); R: Nuova Delhi, Tel Aviv", "bag": "__NO__", "link": "https://kiwi.com/u/34ckkb", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VCE%20to%20HND%20on%202026-12-25%20through%202027-01-10", "note": "Biglietti separati/self-transfer, notti a Budapest e Delhi."}, {"t": "Verona – Kiwi – feste", "tipo": "Volo", "f": "Kiwi", "r": "Feste 20 dic-10 gen", "eur": 1239, "usd": null, "and": "2026-12-24 13:45 VRN → 2026-12-25 19:45 HND", "rit": "2027-01-06 22:05 HND → 2027-01-07 17:15 VRN", "da": "22h00", "dr": "27h10", "cs": "A: Tirana, Istanbul; R: Istanbul, Tirana", "bag": "__NO__", "link": "https://kiwi.com/u/ntr5uu2", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VRN%20to%20HND%20on%202026-12-24%20through%202027-01-06", "note": "Biglietti separati via Tirana."}, {"t": "Milan – lastminute – feste", "tipo": "Volo", "f": "lastminute", "r": "Feste 20 dic-10 gen", "eur": 1246.03, "usd": null, "and": "2026-12-22 11:20 MXP → 2026-12-24 07:55 HND", "rit": "2027-01-05 09:55 HND → 2027-01-05 19:15 MXP", "da": "36h35", "dr": "17h20", "cs": "non indicata", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=MIL&arrivalAirport=TYO&outboundDay=22&outboundMonthYear=122026&returnDay=05&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824917198731380736&mac=824917198731380736SCHv01-2072369809&acntb=flight&utm_term=MILTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=1246030&jC=1246030_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20MXP%20to%20HND%20on%202026-12-22%20through%202027-01-05", "note": "bagaglio non indicato. Date fisse 22/12–05/01. SAS."}, {"t": "Rome – lastminute – feste", "tipo": "Volo", "f": "lastminute", "r": "Feste 20 dic-10 gen", "eur": 1238.37, "usd": null, "and": "2026-12-22 19:00 FCO → 2026-12-24 10:55 NRT", "rit": "2027-01-05 18:55 NRT → 2027-01-06 17:00 FCO", "da": "31h55", "dr": "30h05", "cs": "non indicata (probabile Seul)", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=ROM&arrivalAirport=TYO&outboundDay=22&outboundMonthYear=122026&returnDay=05&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824917205140412416&mac=824917205140412416SCHv011155365656&acntb=flight&utm_term=ROMTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=1238370&jC=1238370_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20FCO%20to%20NRT%20on%202026-12-22%20through%202027-01-05", "note": "bagaglio non indicato. Date fisse 22/12–05/01. T'way Air."}, {"t": "Bologna – lastminute – feste", "tipo": "Volo", "f": "lastminute", "r": "Feste 20 dic-10 gen", "eur": 1649.34, "usd": null, "and": "2026-12-22 14:30 BLQ → 2026-12-23 22:30 HND", "rit": "2027-01-05 22:20 NRT → 2027-01-06 12:40 BLQ", "da": "24h00", "dr": "22h20", "cs": "non indicata (probabile Dubai)", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=BLQ&arrivalAirport=TYO&outboundDay=22&outboundMonthYear=122026&returnDay=05&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824917211235543040&mac=824917211235543040SCHv011460677751&acntb=flight&utm_term=BLQTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=1649340&jC=1649340_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20BLQ%20to%20HND%20on%202026-12-22%20through%202027-01-05", "note": "bagaglio non indicato. Date fisse 22/12–05/01. Emirates."}, {"t": "Venice – lastminute – feste", "tipo": "Volo", "f": "lastminute", "r": "Feste 20 dic-10 gen", "eur": 1548.85, "usd": null, "and": "2026-12-22 15:15 VCE → 2026-12-24 15:10 NRT", "rit": "2027-01-05 16:40 NRT → 2027-01-06 14:30 VCE", "da": "39h55", "dr": "29h50", "cs": "non indicata", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=VCE&arrivalAirport=TYO&outboundDay=22&outboundMonthYear=122026&returnDay=05&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824917215974193153&mac=824917215974193153SCHv01698725156&acntb=flight&utm_term=VCETYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=1548850&jC=1548850_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VCE%20to%20NRT%20on%202026-12-22%20through%202027-01-05", "note": "bagaglio non indicato. Date fisse 22/12–05/01. ITA + Sichuan."}, {"t": "Verona – lastminute – feste", "tipo": "Volo", "f": "lastminute", "r": "Feste 20 dic-10 gen", "eur": 1493.93, "usd": null, "and": "2026-12-22 06:35 VRN → 2026-12-23 12:50 HND", "rit": "2027-01-05 15:00 NRT → 2027-01-06 12:50 VRN", "da": "22h15", "dr": "29h50", "cs": "non indicata", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=VRN&arrivalAirport=TYO&outboundDay=22&outboundMonthYear=122026&returnDay=05&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824917222475491328&mac=824917222475491328SCHv012137359647&acntb=flight&utm_term=VRNTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=1493930&jC=1493930_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VRN%20to%20HND%20on%202026-12-22%20through%202027-01-05", "note": "bagaglio non indicato. Date fisse 22/12–05/01. Air China."}, {"t": "Rome – GoVola – feste", "tipo": "Volo", "f": "GoVola", "r": "Feste 20 dic-10 gen", "eur": 1220, "usd": null, "and": "2026-12-22 19:00 FCO → 2026-12-23 22:15 NRT", "rit": "2027-01-05 18:55 NRT → 2027-01-06 17:00 FCO", "da": "19h15", "dr": "30h05", "cs": "A: Seul; R: Seul (notte)", "bag": "__NO__", "link": null, "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20FCO%20to%20NRT%20on%202026-12-22%20through%202027-01-05", "note": "bagaglio non indicato. Date fisse 22/12–05/01. Scontato 1210 €."}, {"t": "Milan – Kiwi", "tipo": "Volo", "f": "Kiwi", "r": "Intervallo date", "eur": 641, "usd": null, "and": "2027-01-07 12:30 MXP → 2027-01-08 14:25 HND", "rit": "2027-01-20 21:00 HND → 2027-01-21 06:30 MXP", "da": "17h55", "dr": "17h30", "cs": "A: Pechino (PEK); R: Pechino (PEK)", "bag": "__YES__", "link": "https://kiwi.com/u/mdt88h", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20MXP%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": ""}, {"t": "Rome – Kiwi", "tipo": "Volo", "f": "Kiwi", "r": "Intervallo date", "eur": 758, "usd": null, "and": "2027-01-07 12:00 FCO → 2027-01-08 15:10 NRT", "rit": "2027-01-19 16:40 NRT → 2027-01-20 06:40 FCO", "da": "19h10", "dr": "22h00", "cs": "A: Chengdu (TFU); R: Chengdu (TFU)", "bag": "__YES__", "link": "https://kiwi.com/u/84tkncy", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20FCO%20to%20NRT%20on%202027-01-07%20through%202027-01-19", "note": ""}, {"t": "Bologna – Kiwi", "tipo": "Volo", "f": "Kiwi", "r": "Intervallo date", "eur": 788, "usd": null, "and": "2027-01-06 06:00 BLQ → 2027-01-07 14:25 HND", "rit": "2027-01-18 21:00 HND → 2027-01-19 11:50 BLQ", "da": "24h25", "dr": "22h50", "cs": "A: Barcellona, Pechino; R: Pechino, Barcellona", "bag": "__NO__", "link": "https://kiwi.com/u/vdh88y", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20BLQ%20to%20HND%20on%202027-01-06%20through%202027-01-18", "note": "Biglietti separati/self-transfer probabili."}, {"t": "Venice – Kiwi", "tipo": "Volo", "f": "Kiwi", "r": "Intervallo date", "eur": 815, "usd": null, "and": "2027-01-05 09:35 VCE → 2027-01-06 08:40 NRT", "rit": "2027-01-19 10:10 NRT → 2027-01-20 08:35 VCE", "da": "15h05", "dr": "30h25", "cs": "A: Istanbul; R: Istanbul (scalo notturno)", "bag": "__YES__", "link": "https://kiwi.com/u/6ddhju", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VCE%20to%20NRT%20on%202027-01-05%20through%202027-01-19", "note": ""}, {"t": "Verona – Kiwi", "tipo": "Volo", "f": "Kiwi", "r": "Intervallo date", "eur": 845, "usd": null, "and": "2027-01-07 13:00 VRN → 2027-01-09 16:20 HND", "rit": "2027-01-20 21:00 HND → 2027-01-21 12:35 VRN", "da": "43h20", "dr": "23h35", "cs": "A: Madrid, Pechino; R: Pechino, Madrid", "bag": "__NO__", "link": "https://kiwi.com/u/c4wppj", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VRN%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "Self-transfer probabile, scalo notturno a Madrid."}, {"t": "Milan – Kiwi – 7-20 gen", "tipo": "Volo", "f": "Kiwi", "r": "Data fissa 7-20 gen", "eur": 641, "usd": null, "and": "2027-01-07 12:30 MXP → 2027-01-08 14:25 HND", "rit": "2027-01-20 21:00 HND → 2027-01-21 06:30 MXP", "da": "17h55", "dr": "17h30", "cs": "A: Pechino (PEK); R: Pechino (PEK)", "bag": "__YES__", "link": "https://kiwi.com/u/jxtuby", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20MXP%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": ""}, {"t": "Rome – Kiwi – 7-20 gen", "tipo": "Volo", "f": "Kiwi", "r": "Data fissa 7-20 gen", "eur": 799, "usd": null, "and": "2027-01-07 19:35 FCO → 2027-01-08 19:40 NRT", "rit": "2027-01-20 23:00 NRT → 2027-01-21 18:35 FCO", "da": "16h05", "dr": "27h35", "cs": "A: Varsavia; R: Varsavia (scalo ~10h)", "bag": "__NO__", "link": "https://kiwi.com/u/3yn4w8", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20FCO%20to%20NRT%20on%202027-01-07%20through%202027-01-20", "note": ""}, {"t": "Bologna – Kiwi – 7-20 gen", "tipo": "Volo", "f": "Kiwi", "r": "Data fissa 7-20 gen", "eur": 839, "usd": null, "and": "2027-01-07 18:55 BLQ → 2027-01-09 16:20 HND", "rit": "2027-01-20 21:00 HND → 2027-01-21 15:20 BLQ", "da": "37h25", "dr": "26h20", "cs": "A: Madrid, Pechino; R: Pechino, Madrid", "bag": "__NO__", "link": "https://kiwi.com/u/cqtt7m", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20BLQ%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "Scali notturni, self-transfer probabile."}, {"t": "Venice – Kiwi – 7-20 gen", "tipo": "Volo", "f": "Kiwi", "r": "Data fissa 7-20 gen", "eur": 822, "usd": null, "and": "2027-01-07 19:45 VCE → 2027-01-09 16:20 HND", "rit": "2027-01-20 21:00 HND → 2027-01-21 12:50 VCE", "da": "36h35", "dr": "23h50", "cs": "A: Madrid, Pechino; R: Pechino, Madrid", "bag": "__NO__", "link": "https://kiwi.com/u/yyk3ru", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VCE%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "Scalo notturno a Madrid, self-transfer probabile."}, {"t": "Verona – Kiwi – 7-20 gen", "tipo": "Volo", "f": "Kiwi", "r": "Data fissa 7-20 gen", "eur": 769, "usd": null, "and": "2027-01-07 23:25 VRN → 2027-01-09 22:40 HND", "rit": "2027-01-20 10:30 HND → 2027-01-21 20:15 VRN", "da": "39h15", "dr": "41h45", "cs": "A: Tirana, Istanbul (SAW), Kuala Lumpur; R: Nuova Delhi, Londra", "bag": "__NO__", "link": "https://kiwi.com/u/hm8q85", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VRN%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "Biglietti separati/self-transfer, 3 scali."}, {"t": "Milan – lastminute – 7-20 gen", "tipo": "Volo", "f": "lastminute", "r": "Data fissa 7-20 gen", "eur": 562.52, "usd": null, "and": "2027-01-07 19:15 MXP → 2027-01-09 16:20 HND", "rit": "2027-01-20 19:30 NRT → 2027-01-21 07:15 MXP", "da": "37h05", "dr": "19h45", "cs": "non indicata", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=MIL&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902938465331200&mac=824902938465331200SCHv011279582245&acntb=flight&utm_term=MILTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=562520&jC=562520_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20MXP%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "bagaglio non indicato. Scalo notturno all'andata."}, {"t": "Rome – lastminute – 7-20 gen", "tipo": "Volo", "f": "lastminute", "r": "Data fissa 7-20 gen", "eur": 636.08, "usd": null, "and": "2027-01-07 19:50 FCO → 2027-01-08 21:30 HND", "rit": "2027-01-20 08:30 HND → 2027-01-20 17:50 FCO", "da": "17h40", "dr": "17h20", "cs": "non indicata (probabile Pechino)", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=ROM&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902942071126016&mac=824902942071126016SCHv01923698567&acntb=flight&utm_term=ROMTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=636080&jC=636080_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20FCO%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "bagaglio non indicato. "}, {"t": "Bologna – lastminute – 7-20 gen", "tipo": "Volo", "f": "lastminute", "r": "Data fissa 7-20 gen", "eur": 855.42, "usd": null, "and": "2027-01-07 19:25 BLQ → 2027-01-09 08:40 NRT", "rit": "2027-01-20 10:10 NRT → 2027-01-21 13:50 BLQ", "da": "29h15", "dr": "35h40", "cs": "non indicata (probabile Istanbul)", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=BLQ&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902947862202368&mac=824902947862202368SCHv011042370852&acntb=flight&utm_term=BLQTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=855420&jC=855420_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20BLQ%20to%20NRT%20on%202027-01-07%20through%202027-01-20", "note": "bagaglio non indicato. "}, {"t": "Venice – lastminute – 7-20 gen", "tipo": "Volo", "f": "lastminute", "r": "Data fissa 7-20 gen", "eur": 563.53, "usd": null, "and": "2027-01-07 21:15 VCE → 2027-01-08 21:30 HND", "rit": "2027-01-20 21:00 HND → 2027-01-21 19:00 VCE", "da": "16h15", "dr": "30h00", "cs": "non indicata", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=VCE&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902951951607808&mac=824902951951607808SCHv011023308558&acntb=flight&utm_term=VCETYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=563530&jC=563530_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VCE%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "bagaglio non indicato. "}, {"t": "Verona – lastminute – 7-20 gen", "tipo": "Volo", "f": "lastminute", "r": "Data fissa 7-20 gen", "eur": 1033.45, "usd": null, "and": "2027-01-07 18:02 XIX → 2027-01-09 11:40 NRT", "rit": "2027-01-20 17:20 NRT → 2027-01-21 12:58 XIX", "da": "33h38", "dr": "27h38", "cs": "non indicata", "bag": "__NO__", "link": "https://www.it.lastminute.com/msr/route/searching.do?departureAirport=VRN&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902956749879296&mac=824902956749879296SCHv01-537224320&acntb=flight&utm_term=VRNTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=1033450&jC=1033450_EUR&cp=0", "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VRN%20to%20NRT%20on%202027-01-07%20through%202027-01-20", "note": "bagaglio non indicato. Origine XIX: probabile tratta in treno."}, {"t": "Milan – GoVola – 7-20 gen", "tipo": "Volo", "f": "GoVola", "r": "Data fissa 7-20 gen", "eur": 560.42, "usd": null, "and": "2027-01-07 19:15 MXP → 2027-01-09 14:25 HND", "rit": "2027-01-20 19:30 NRT → 2027-01-21 07:15 MXP", "da": "35h10", "dr": "19h45", "cs": "A: Pechino (PKX→PEK, notte); R: Shanghai (PVG)", "bag": "__NO__", "link": null, "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20MXP%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "bagaglio non indicato. Cambio aeroporto a Pechino. Scontato 550,42 €."}, {"t": "Rome – GoVola – 7-20 gen", "tipo": "Volo", "f": "GoVola", "r": "Data fissa 7-20 gen", "eur": 614.17, "usd": null, "and": "2027-01-07 19:50 FCO → 2027-01-08 21:30 HND", "rit": "2027-01-20 08:30 HND → 2027-01-20 17:50 FCO", "da": "17h40", "dr": "17h20", "cs": "A: Pechino (PEK); R: Pechino (PEK)", "bag": "__NO__", "link": null, "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20FCO%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "bagaglio non indicato. Scontato 604,17 €."}, {"t": "Milan – Turkish – 7-20 gen", "tipo": "Volo", "f": "Turkish", "r": "Data fissa 7-20 gen", "eur": 769.86, "usd": null, "and": "2027-01-07 18:55 MXP → 2027-01-08 19:45 HND", "rit": "2027-01-20 10:10 NRT → 2027-01-21 09:05 MXP", "da": "16h50", "dr": "30h55", "cs": "A: Istanbul; R: Istanbul (scalo notturno)", "bag": "__YES__", "link": null, "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20MXP%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "Stiva 1x23 kg."}, {"t": "Rome – Turkish – 7-20 gen", "tipo": "Volo", "f": "Turkish", "r": "Data fissa 7-20 gen", "eur": 770.31, "usd": null, "and": "2027-01-07 19:45 FCO → 2027-01-08 19:45 HND", "rit": "2027-01-20 10:10 NRT → 2027-01-20 21:55 FCO", "da": "16h00", "dr": "19h45", "cs": "A: Istanbul; R: Istanbul", "bag": "__YES__", "link": null, "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20FCO%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "Stiva 1x23 kg."}, {"t": "Bologna – Turkish – 7-20 gen", "tipo": "Volo", "f": "Turkish", "r": "Data fissa 7-20 gen", "eur": 769.92, "usd": null, "and": "2027-01-07 19:25 BLQ → 2027-01-08 19:45 HND", "rit": "2027-01-20 10:10 NRT → 2027-01-21 13:50 BLQ", "da": "16h20", "dr": "35h40", "cs": "A: Istanbul; R: Istanbul (scalo notturno)", "bag": "__YES__", "link": null, "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20BLQ%20to%20HND%20on%202027-01-07%20through%202027-01-20", "note": "Stiva 1x23 kg."}, {"t": "Venice – Turkish – 7-20 gen", "tipo": "Volo", "f": "Turkish", "r": "Data fissa 7-20 gen", "eur": 769.76, "usd": null, "and": "2027-01-07 09:35 VCE → 2027-01-08 08:40 NRT", "rit": "2027-01-20 10:10 NRT → 2027-01-21 13:50 VCE", "da": "15h05", "dr": "35h40", "cs": "A: Istanbul; R: Istanbul (scalo notturno)", "bag": "__YES__", "link": null, "gf": "https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20VCE%20to%20NRT%20on%202027-01-07%20through%202027-01-20", "note": "Stiva 1x23 kg."}, {"t": "Milan – SlickTrip – 7-20 gen", "tipo": "Volo", "f": "SlickTrip", "r": "Data fissa 7-20 gen", "eur": null, "usd": 771, "and": "", "rit": "non indicato", "da": "19h10", "dr": null, "cs": "A: Shanghai (PVG)", "bag": "__NO__", "link": "https://slicktrip.com/flights?key=MILA%3BTYOA%3Beconomy%3B1%3B2027-01-07%3B2027-01-20&src=claude&utm_source=claude&utm_medium=mcp&utm_campaign=assistant", "gf": "", "note": "bagaglio non indicato. Prezzo in USD."}, {"t": "Rome – SlickTrip – 7-20 gen", "tipo": "Volo", "f": "SlickTrip", "r": "Data fissa 7-20 gen", "eur": null, "usd": 699, "and": "", "rit": "non indicato", "da": "17h40", "dr": null, "cs": "A: Pechino (PEK)", "bag": "__NO__", "link": "https://slicktrip.com/flights?key=ROME%3BTYOA%3Beconomy%3B1%3B2027-01-07%3B2027-01-20&src=claude&utm_source=claude&utm_medium=mcp&utm_campaign=assistant", "gf": "", "note": "bagaglio non indicato. Prezzo in USD."}, {"t": "Bologna – SlickTrip – 7-20 gen", "tipo": "Volo", "f": "SlickTrip", "r": "Data fissa 7-20 gen", "eur": null, "usd": 872, "and": "", "rit": "non indicato", "da": "29h15", "dr": null, "cs": "A: Istanbul (notte)", "bag": "__NO__", "link": "https://slicktrip.com/flights?key=BLQ%3BTYOA%3Beconomy%3B1%3B2027-01-07%3B2027-01-20&src=claude&utm_source=claude&utm_medium=mcp&utm_campaign=assistant", "gf": "", "note": "bagaglio non indicato. Prezzo in USD."}, {"t": "Venice – SlickTrip – 7-20 gen", "tipo": "Volo", "f": "SlickTrip", "r": "Data fissa 7-20 gen", "eur": null, "usd": 872, "and": "", "rit": "non indicato", "da": "15h05", "dr": null, "cs": "A: Istanbul", "bag": "__NO__", "link": "https://slicktrip.com/flights?key=VCE%3BTYOA%3Beconomy%3B1%3B2027-01-07%3B2027-01-20&src=claude&utm_source=claude&utm_medium=mcp&utm_campaign=assistant", "gf": "", "note": "bagaglio non indicato. Prezzo in USD."}, {"t": "Verona – SlickTrip – 7-20 gen", "tipo": "Volo", "f": "SlickTrip", "r": "Data fissa 7-20 gen", "eur": null, "usd": 1136, "and": "", "rit": "non indicato", "da": "16h20", "dr": null, "cs": "A: Monaco (MUC)", "bag": "__NO__", "link": "https://slicktrip.com/flights?key=VRN%3BTYOA%3Beconomy%3B1%3B2027-01-07%3B2027-01-20&src=claude&utm_source=claude&utm_medium=mcp&utm_campaign=assistant", "gf": "", "note": "bagaglio non indicato. Prezzo in USD."}, {"t": "Sivola 2026-12-18 Roma 18-40", "tipo": "Sivola", "f": "Sivola", "eur": 3390, "city": "Roma", "dp": "2026-12-18", "rit": "2026-12-30", "stato": "Disponibile", "eta": "18-40", "note": "Tag tema: FOLIAGE"}, {"t": "Sivola 2026-12-28 Roma 18-40", "tipo": "Sivola", "f": "Sivola", "eur": 3590, "city": "Roma", "dp": "2026-12-28", "rit": "2027-01-09", "stato": "Disponibile", "eta": "18-40", "note": null}, {"t": "Sivola 2026-12-29 Milano 18-40", "tipo": "Sivola", "f": "Sivola", "eur": 3590, "city": "Milano", "dp": "2026-12-29", "rit": "2027-01-10", "stato": "Disponibile", "eta": "18-40", "note": null}, {"t": "Sivola 2026-12-29 Milano 18-50", "tipo": "Sivola", "f": "Sivola", "eur": 3590, "city": "Milano", "dp": "2026-12-29", "rit": "2027-01-10", "stato": "Disponibile", "eta": "18-50", "note": null}, {"t": "Sivola 2026-12-30 Milano 18-40", "tipo": "Sivola", "f": "Sivola", "eur": 3590, "city": "Milano", "dp": "2026-12-30", "rit": "2027-01-11", "stato": "Disponibile", "eta": "18-40", "note": null}, {"t": "Sivola 2027-01-16 Milano 18-40", "tipo": "Sivola", "f": "Sivola", "eur": 3190, "city": "Milano", "dp": "2027-01-16", "rit": "2027-01-28", "stato": "Disponibile", "eta": "18-40", "note": null}, {"t": "Sivola 2027-01-31 Milano 18-40", "tipo": "Sivola", "f": "Sivola", "eur": 3190, "city": "Milano", "dp": "2027-01-31", "rit": "2027-02-12", "stato": "Disponibile", "eta": "18-40", "note": null}], "hist": [{"d": "2026-09-30", "o": "Bologna", "g": "kiwi", "eur": 870, "f": "Kiwi"}, {"d": "2026-09-30", "o": "Milan", "g": "kiwi", "eur": 638, "f": "Kiwi"}, {"d": "2026-09-30", "o": "Rome", "g": "kiwi", "eur": 754, "f": "Kiwi"}, {"d": "2026-09-30", "o": "Venice", "g": "kiwi", "eur": 814, "f": "Kiwi"}, {"d": "2026-09-30", "o": "Verona", "g": "kiwi", "eur": 847, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Bologna", "g": "feste", "eur": 1016, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Bologna", "g": "fissa", "eur": 769.92, "f": "Turkish"}, {"d": "2026-10-01", "o": "Bologna", "g": "kiwi", "eur": 788, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Milan", "g": "feste", "eur": 918, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Milan", "g": "fissa", "eur": 560.42, "f": "GoVola"}, {"d": "2026-10-01", "o": "Milan", "g": "kiwi", "eur": 641, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Rome", "g": "feste", "eur": 914, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Rome", "g": "fissa", "eur": 614.17, "f": "GoVola"}, {"d": "2026-10-01", "o": "Rome", "g": "kiwi", "eur": 758, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Venice", "g": "feste", "eur": 925, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Venice", "g": "fissa", "eur": 563.53, "f": "lastminute"}, {"d": "2026-10-01", "o": "Venice", "g": "kiwi", "eur": 815, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Verona", "g": "feste", "eur": 1239, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Verona", "g": "fissa", "eur": 769, "f": "Kiwi"}, {"d": "2026-10-01", "o": "Verona", "g": "kiwi", "eur": 845, "f": "Kiwi"}]}/*__END__*/;
 
-/* Storico: un record per rilevazione (data, città, fonte, ricerca, prezzo EUR) */
-const HISTORY = [
-  {d:"2026-09-30", o:"Milano",  f:"Kiwi", r:"intervallo", eur:638},
-  {d:"2026-09-30", o:"Roma",    f:"Kiwi", r:"intervallo", eur:754},
-  {d:"2026-09-30", o:"Bologna", f:"Kiwi", r:"intervallo", eur:870},
-  {d:"2026-09-30", o:"Venezia", f:"Kiwi", r:"intervallo", eur:814},
-  {d:"2026-09-30", o:"Verona",  f:"Kiwi", r:"intervallo", eur:847},
-
-  {d:"2026-10-01", o:"Milano",  f:"Kiwi", r:"intervallo", eur:641},
-  {d:"2026-10-01", o:"Roma",    f:"Kiwi", r:"intervallo", eur:758},
-  {d:"2026-10-01", o:"Bologna", f:"Kiwi", r:"intervallo", eur:788},
-  {d:"2026-10-01", o:"Venezia", f:"Kiwi", r:"intervallo", eur:815},
-  {d:"2026-10-01", o:"Verona",  f:"Kiwi", r:"intervallo", eur:845},
-  {d:"2026-10-01", o:"Milano",  f:"Kiwi", r:"fissa", eur:641},
-  {d:"2026-10-01", o:"Roma",    f:"Kiwi", r:"fissa", eur:799},
-  {d:"2026-10-01", o:"Bologna", f:"Kiwi", r:"fissa", eur:839},
-  {d:"2026-10-01", o:"Venezia", f:"Kiwi", r:"fissa", eur:822},
-  {d:"2026-10-01", o:"Verona",  f:"Kiwi", r:"fissa", eur:769},
-  {d:"2026-10-01", o:"Milano",  f:"lastminute", r:"fissa", eur:562.52},
-  {d:"2026-10-01", o:"Roma",    f:"lastminute", r:"fissa", eur:636.08},
-  {d:"2026-10-01", o:"Bologna", f:"lastminute", r:"fissa", eur:855.42},
-  {d:"2026-10-01", o:"Venezia", f:"lastminute", r:"fissa", eur:563.53},
-  {d:"2026-10-01", o:"Verona",  f:"lastminute", r:"fissa", eur:1033.45},
-  {d:"2026-10-01", o:"Milano",  f:"GoVola", r:"fissa", eur:560.42},
-  {d:"2026-10-01", o:"Roma",    f:"GoVola", r:"fissa", eur:614.17},
-  {d:"2026-10-01", o:"Milano",  f:"Turkish", r:"fissa", eur:769.86},
-  {d:"2026-10-01", o:"Roma",    f:"Turkish", r:"fissa", eur:770.31},
-  {d:"2026-10-01", o:"Bologna", f:"Turkish", r:"fissa", eur:769.92},
-  {d:"2026-10-01", o:"Venezia", f:"Turkish", r:"fissa", eur:769.76}
-];
-
-const GF = (a,b,d1,d2)=>`https://www.google.com/travel/flights?hl=it&curr=EUR&q=Flights%20from%20${a}%20to%20${b}%20on%20${d1}%20through%20${d2}`;
-const LM = {
-  MIL:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=MIL&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902938465331200&mac=824902938465331200SCHv011279582245&acntb=flight&utm_term=MILTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=562520&jC=562520_EUR&cp=0",
-  ROM:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=ROM&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902942071126016&mac=824902942071126016SCHv01923698567&acntb=flight&utm_term=ROMTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=636080&jC=636080_EUR&cp=0",
-  BLQ:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=BLQ&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902947862202368&mac=824902947862202368SCHv011042370852&acntb=flight&utm_term=BLQTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=855420&jC=855420_EUR&cp=0",
-  VCE:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=VCE&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902951951607808&mac=824902951951607808SCHv011023308558&acntb=flight&utm_term=VCETYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=563530&jC=563530_EUR&cp=0",
-  VRN:"https://www.it.lastminute.com/msr/route/searching.do?departureAirport=VRN&arrivalAirport=TYO&outboundDay=07&outboundMonthYear=012027&returnDay=20&returnMonthYear=012027&adults=1&childs=0&infants=0&COBRANDED=LMNIT_LLMPROJECTIT&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=824902956749879296&mac=824902956749879296SCHv01-537224320&acntb=flight&utm_term=VRNTYO&utm_campaign=results&utm_medium=meta_search&utm_source=LMNIT_LLMPROJECTIT&bf_subsource=-----WS0S02PP01&autoclick=true&j=1033450&jC=1033450_EUR&cp=0"
-};
-const ST = k=>`https://slicktrip.com/flights?key=${k}%3BTYOA%3Beconomy%3B1%3B2027-01-07%3B2027-01-20&src=claude&utm_source=claude&utm_medium=mcp&utm_campaign=assistant`;
-
-/* Migliori offerte (una per città) */
-const BEST = [
-  {o:"Milano", p:560.42, f:"GoVola", a:"07/01 19:15 MXP → 09/01 14:25 HND", r:"20/01 19:30 NRT → 21/01 07:15 MXP",
-   dur:"35h10 / 19h45", warn:"andata >24h, notte a Pechino", sc:"Pechino (PKX→PEK) / Shanghai", bag:"non indicato", link:null, gf:GF("MXP","HND","2027-01-07","2027-01-20"),
-   note:"Alternativa più comoda: Kiwi 641 € (17h55 / 17h30, stiva inclusa)", alt:"https://kiwi.com/u/jxtuby"},
-  {o:"Roma", p:614.17, f:"GoVola", a:"07/01 19:50 FCO → 08/01 21:30 HND", r:"20/01 08:30 HND → 17:50 FCO",
-   dur:"17h40 / 17h20", warn:null, sc:"Pechino / Pechino", bag:"non indicato", link:null, gf:GF("FCO","HND","2027-01-07","2027-01-20")},
-  {o:"Bologna", p:769.92, f:"Turkish", a:"07/01 19:25 BLQ → 08/01 19:45 HND", r:"20/01 10:10 NRT → 21/01 13:50 BLQ",
-   dur:"16h20 / 35h40", warn:"ritorno >24h, notte a Istanbul", sc:"Istanbul / Istanbul", bag:"stiva 23 kg", link:null, gf:GF("BLQ","HND","2027-01-07","2027-01-20")},
-  {o:"Venezia", p:563.53, f:"lastminute", a:"07/01 21:15 VCE → 08/01 21:30 HND", r:"20/01 21:00 HND → 21/01 19:00 VCE",
-   dur:"16h15 / 30h00", warn:"ritorno >24h", sc:"non indicato", bag:"non indicato", link:LM.VCE, gf:GF("VCE","HND","2027-01-07","2027-01-20")},
-  {o:"Verona", p:769, f:"Kiwi", a:"07/01 23:25 VRN → 09/01 22:40 HND", r:"20/01 10:30 HND → 21/01 20:15 VRN",
-   dur:"39h15 / 41h45", warn:"biglietti separati, 3 scali", sc:"Tirana, Istanbul, Kuala Lumpur / Delhi, Londra", bag:"nessuno", link:"https://kiwi.com/u/hm8q85", gf:GF("VRN","HND","2027-01-07","2027-01-20")}
-];
-
-/* Confronto fonti: [prezzo, link] ; null = nessun risultato */
-const SOURCES = [
-  {o:"Milano",  kiwi:[641,"https://kiwi.com/u/jxtuby"], lm:[562.52,LM.MIL], gv:[560.42,null], st:[771,ST("MILA")], tk:[769.86,null]},
-  {o:"Roma",    kiwi:[799,"https://kiwi.com/u/3yn4w8"], lm:[636.08,LM.ROM], gv:[614.17,null], st:[699,ST("ROME")], tk:[770.31,null]},
-  {o:"Bologna", kiwi:[839,"https://kiwi.com/u/cqtt7m"], lm:[855.42,LM.BLQ], gv:"nessun risultato", st:[872,ST("BLQ")], tk:[769.92,null]},
-  {o:"Venezia", kiwi:[822,"https://kiwi.com/u/yyk3ru"], lm:[563.53,LM.VCE], gv:"non cercato", st:[872,ST("VCE")], tk:[769.76,null]},
-  {o:"Verona",  kiwi:[769,"https://kiwi.com/u/hm8q85"], lm:[1033.45,LM.VRN], gv:"non cercato", st:[1136,ST("VRN")], tk:"nessun risultato"}
-];
-
-const SIVOLA = [
-  {p:"18/12/2026", r:"30/12/2026", c:"Roma", e:3390, a:"18-40", s:"Disponibile", t:"FOLIAGE"},
-  {p:"28/12/2026", r:"09/01/2027", c:"Roma", e:3590, a:"18-40", s:"Disponibile"},
-  {p:"29/12/2026", r:"10/01/2027", c:"Milano", e:3590, a:"18-40", s:"Disponibile"},
-  {p:"29/12/2026", r:"10/01/2027", c:"Milano", e:3590, a:"18-50", s:"Disponibile"},
-  {p:"30/12/2026", r:"11/01/2027", c:"Milano", e:3590, a:"18-40", s:"Disponibile"},
-  {p:"16/01/2027", r:"28/01/2027", c:"Milano", e:3190, a:"18-40", s:"Disponibile"},
-  {p:"31/01/2027", r:"12/02/2027", c:"Milano", e:3190, a:"18-40", s:"Disponibile"}
-];
-/* ====== fine dati ====== */
-
+const ORIG = {Milan:"Milano",Rome:"Roma",Bologna:"Bologna",Venice:"Venezia",Verona:"Verona"};
 const ORIGINS = ["Milano","Roma","Bologna","Venezia","Verona"];
 const COLOR = {Milano:"var(--s1)",Roma:"var(--s2)",Bologna:"var(--s3)",Venezia:"var(--s4)",Verona:"var(--s5)"};
-const eur = v => v.toLocaleString("it-IT",{minimumFractionDigits: v%1?2:0, maximumFractionDigits:2})+" €";
+const SOURCES = ["Kiwi","lastminute","GoVola","SlickTrip","Turkish"];
+const PERIODS = [
+  {k:"feste", lab:"Feste 20 dic–10 gen", test:r=>r.g==="feste"},
+  {k:"cheap", lab:"Più economici (anche gennaio)", test:r=>r.g!=="feste"}
+];
+const CHART_MODES = [
+  {k:"feste", lab:"Feste 20 dic–10 gen", test:PERIODS[0].test},
+  {k:"cheap", lab:"Più economici (qualsiasi data)", test:PERIODS[1].test},
+  {k:"kiwi",  lab:"Solo Kiwi intervallo ampio", test:r=>r.g==="kiwi"}
+];
+const groupOf = r => /^Feste/.test(r.r||"") ? "feste" : (!r.r||r.r==="Intervallo date") ? "kiwi" : "fissa";
+
+const origOf = t => ORIG[(t||"").split(/\s+/)[0]] || null;
+const eur = v => v==null?"—":v.toLocaleString("it-IT",{minimumFractionDigits: v%1?2:0, maximumFractionDigits:2})+" €";
 const usd = v => "$"+v.toLocaleString("it-IT");
-const fmtD = d => { const [y,m,g]=d.split("-"); return `${g}/${m}`; };
-const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const a = (url,txt) => url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${txt}</a>` : "—";
+const fmtD = d => { const p=d.split("-"); return `${p[2]}/${p[1]}`; };
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const A = (url,txt) => url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${txt}</a>` : "";
+const hours = s => { const m=/(\d+)h/.exec(s||""); return m?+m[1]:0; };
+const shortDT = s => { const m=/(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2}) (\w{3}) → (\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2}) (\w{3})/.exec(s||""); return m?`${m[3]}/${m[2]} ${m[4]} ${m[5]} → ${m[8]}/${m[7]} ${m[9]} ${m[10]}`:esc(s||"—"); };
 
-document.getElementById("upd").textContent = new Date(UPDATED).toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
+const hist = DATA.hist.map(h=>({...h,o:ORIG[h.o]||h.o})).filter(h=>ORIGINS.includes(h.o));
+const rows = DATA.rows;
+const flights = rows.filter(r=>r.tipo==="Volo").map(r=>({...r,o:origOf(r.t),g:groupOf(r),bag: r.bag==="__YES__"||r.bag===true ? true : /non indicat/i.test(r.note||"") ? null : false}));
+const sivola = rows.filter(r=>r.tipo==="Sivola").sort((a,b)=>(a.dp||"").localeCompare(b.dp||"")||(a.eta||"").localeCompare(b.eta||""));
+const dates = [...new Set(hist.map(h=>h.d))].sort();
+const last = dates.at(-1), prev = dates.at(-2);
+document.getElementById("upd").textContent = DATA.updated ? new Date(DATA.updated+"T12:00:00").toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}) : "—";
 
-/* serie per il grafico */
-function series(mode){
-  const dates=[...new Set(HISTORY.map(h=>h.d))].sort();
-  return {dates, lines: ORIGINS.map(o=>({o, pts: dates.map(d=>{
-    const rows=HISTORY.filter(h=>h.d===d&&h.o===o&&(mode==="min"||(h.f==="Kiwi"&&h.r==="intervallo")));
-    if(!rows.length) return null;
-    const m=rows.reduce((x,y)=>y.eur<x.eur?y:x);
-    return {d, v:m.eur, f:m.f};
-  })}))};
+function warnings(r){
+  const w=[];
+  if(hours(r.da)>=24) w.push("andata >24h");
+  if(hours(r.dr)>=24) w.push("ritorno >24h");
+  const txt=((r.note||"")+" "+(r.cs||"")).toLowerCase();
+  if(/self-transfer|separat/.test(txt)) w.push("biglietti separati");
+  if(/nott/.test(txt)) w.push("scalo notturno");
+  return w;
 }
+function minBy(arr,f){ return arr.reduce((b,x)=> (b==null||f(x)<f(b))?x:b, null); }
 
-/* KPI */
+/* ===== KPI ===== */
 (function(){
-  const s=series("min"), last=s.dates.at(-1), prev=s.dates.at(-2);
-  const cur=s.lines.map(l=>({o:l.o,...l.pts.at(-1)})).filter(x=>x.v!=null).reduce((x,y)=>y.v<x.v?y:x);
-  const prevMin=prev?Math.min(...s.lines.map(l=>l.pts.at(-2)?.v).filter(v=>v!=null)):null;
-  let delta="";
-  if(prevMin){const d=cur.v-prevMin,pc=d/prevMin*100;
-    delta=`<span class="${d<0?"delta-down":"delta-up"}">${d<0?"▼":"▲"} ${eur(Math.abs(+d.toFixed(2)))} (${pc.toFixed(1).replace(".",",")}%)</span> rispetto al ${fmtD(prev)}`;}
-  const bag=BEST.filter(b=>b.bag.startsWith("stiva"));
-  document.getElementById("kpis").innerHTML=`
-    <div class="kpi"><div class="lab">Prezzo più basso oggi</div><div class="val">${eur(cur.v)}</div>
-      <div class="det">${cur.o} · ${cur.f}<br>${delta}</div></div>
-    <div class="kpi"><div class="lab">Miglior volo comodo con stiva</div><div class="val">641 €</div>
-      <div class="det">Milano · Kiwi · Air China, 1 scalo<br>circa 18h per tratta</div></div>
-    <div class="kpi"><div class="lab">Tour Sivola</div><div class="val">da 3.190 €</div>
-      <div class="det">${SIVOLA.length} partenze, tutte “${SIVOLA[0].s}”<br>nessuna variazione</div></div>`;
+  const k=[];
+  for(const p of PERIODS){
+    const cur=minBy(hist.filter(h=>h.d===last&&h.eur!=null&&p.test(h)),h=>h.eur);
+    const pr=prev?minBy(hist.filter(h=>h.d===prev&&h.eur!=null&&p.test(h)),h=>h.eur):null;
+    let delta="primo rilevamento";
+    if(cur&&pr){ const d=cur.eur-pr.eur; delta = d===0?"invariato rispetto al "+fmtD(prev):`<span class="${d<0?"down":"up"}">${d<0?"▼":"▲"} ${eur(Math.abs(+d.toFixed(2)))} (${(d/pr.eur*100).toFixed(1).replace(".",",")}%)</span> rispetto al ${fmtD(prev)}`; }
+    k.push(`<div class="kpi"><div class="lab">Prezzo più basso · ${p.lab}</div><div class="val">${cur?eur(cur.eur):"—"}</div><div class="det">${cur?`${cur.o} · ${cur.f||"Kiwi"}`:"nessun dato"}<br>${cur?delta:""}</div></div>`);
+  }
+  if(sivola.length){
+    const mn=Math.min(...sivola.map(s=>s.eur)); const st=[...new Set(sivola.map(s=>s.stato))];
+    k.push(`<div class="kpi"><div class="lab">Tour Sivola</div><div class="val">da ${eur(mn)}</div><div class="det">${sivola.length} partenze · stato: ${st.map(esc).join(", ")}</div></div>`);
+  }
+  document.getElementById("kpis").innerHTML=k.join("");
 })();
 
-/* Grafico */
+/* ===== Grafico ===== */
 const chartEl=document.getElementById("chart"), tip=document.getElementById("tip");
-function draw(mode){
-  const {dates,lines}=series(mode);
-  const W=Math.max(320,chartEl.clientWidth||900),H=W<600?280:340,m={t:16,r:W<600?118:130,b:36,l:W<600?48:56};
-  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+let MODE=CHART_MODES[0].k;
+function series(mode){
+  const test=CHART_MODES.find(m=>m.k===mode).test;
+  const ds=[...new Set(hist.filter(h=>h.eur!=null&&test(h)).map(h=>h.d))].sort();
+  return {dates:ds, lines:ORIGINS.map(o=>({o,pts:ds.map(d=>{const m=minBy(hist.filter(h=>h.d===d&&h.o===o&&h.eur!=null&&test(h)),h=>h.eur);return m?{v:m.eur,f:m.f||"Kiwi"}:null;})}))};
+}
+function draw(){
+  const {dates:ds,lines}=series(MODE);
+  chartEl.querySelectorAll("svg,.empty").forEach(s=>s.remove());
+  document.getElementById("legend").innerHTML=ORIGINS.map(o=>`<span><i style="background:${COLOR[o]}"></i>${o}</span>`).join("");
   const vals=lines.flatMap(l=>l.pts.filter(Boolean).map(p=>p.v));
-  let lo=Math.floor((Math.min(...vals)-40)/100)*100, hi=Math.ceil((Math.max(...vals)+40)/100)*100;
-  const x=i=> dates.length===1? m.l+iw/2 : m.l+i*iw/(dates.length-1);
+  if(!vals.length){ chartEl.insertAdjacentHTML("afterbegin",`<div class="empty">Nessun dato ancora per questo periodo.</div>`); document.getElementById("chartTable").innerHTML=""; return; }
+  const W=Math.max(320,chartEl.clientWidth||900),H=W<600?280:340,m={t:16,r:W<600?118:130,b:36,l:W<600?52:60};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const step=(Math.max(...vals)-Math.min(...vals))>600?200:100;
+  const lo=Math.floor((Math.min(...vals)-40)/step)*step, hi=Math.ceil((Math.max(...vals)+40)/step)*step;
+  const x=i=> ds.length===1? m.l+iw/2 : m.l+i*iw/(ds.length-1);
   const y=v=> m.t+ih-(v-lo)/(hi-lo)*ih;
   let g="";
-  for(let v=lo; v<=hi; v+=100){
-    g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`+
-       `<text x="${m.l-8}" y="${y(v)+4}" text-anchor="end">${v.toLocaleString("it-IT")} €</text>`;
-  }
-  dates.forEach((d,i)=> g+=`<text x="${x(i)}" y="${H-12}" text-anchor="middle">${fmtD(d)}</text>`);
-  // linee
+  for(let v=lo; v<=hi; v+=step) g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${m.l-8}" y="${y(v)+4}" text-anchor="end">${v.toLocaleString("it-IT")} €</text>`;
+  const every=Math.ceil(ds.length/(W<600?4:10));
+  ds.forEach((d,i)=>{ if(i%every===0||i===ds.length-1) g+=`<text x="${x(i)}" y="${H-12}" text-anchor="middle">${fmtD(d)}</text>`; });
   lines.forEach(l=>{
-    const p=l.pts.map((pt,i)=>pt?[x(i),y(pt.v)]:null);
     let path="",pen=false;
-    p.forEach(q=>{ if(!q){pen=false;return;} path+=(pen?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1); pen=true; });
+    l.pts.forEach((p,i)=>{ if(!p){pen=false;return;} path+=(pen?"L":"M")+x(i).toFixed(1)+" "+y(p.v).toFixed(1); pen=true; });
     g+=`<path d="${path}" fill="none" stroke="${COLOR[l.o]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-    p.forEach(q=>{ if(q) g+=`<circle cx="${q[0]}" cy="${q[1]}" r="4.5" fill="${COLOR[l.o]}" stroke="var(--surface)" stroke-width="2"/>`; });
+    if(ds.length<=20) l.pts.forEach((p,i)=>{ if(p) g+=`<circle cx="${x(i)}" cy="${y(p.v)}" r="4.5" fill="${COLOR[l.o]}" stroke="var(--surface)" stroke-width="2"/>`; });
   });
-  // etichette dirette a fine linea, con anti-collisione
-  const ends=lines.map(l=>{const i=l.pts.length-1;return l.pts[i]?{o:l.o,v:l.pts[i].v,y:y(l.pts[i].v)}:null}).filter(Boolean).sort((a,b)=>a.y-b.y);
+  const ends=lines.map(l=>{const p=l.pts.at(-1);return p?{o:l.o,v:p.v,y:y(p.v)}:null}).filter(Boolean).sort((a,b)=>a.y-b.y);
   for(let i=1;i<ends.length;i++) if(ends[i].y-ends[i-1].y<16) ends[i].y=ends[i-1].y+16;
-  ends.forEach(e=> g+=`<text class="lbl" x="${x(dates.length-1)+12}" y="${e.y+4}">${e.o} ${eur(e.v)}</text>`);
-  g+=`<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${m.t+ih}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`;
-  g+=`<rect id="hit" x="${m.l-20}" y="${m.t}" width="${iw+40}" height="${ih}" fill="transparent"/>`;
-  chartEl.querySelectorAll("svg").forEach(s=>s.remove());
+  ends.forEach(e=> g+=`<text class="lbl" x="${x(ds.length-1)+12}" y="${e.y+4}">${e.o} ${eur(e.v)}</text>`);
+  g+=`<line id="xh" y1="${m.t}" y2="${m.t+ih}" stroke="var(--muted)" stroke-dasharray="3 3" opacity="0"/><rect id="hit" x="${m.l-20}" y="${m.t}" width="${iw+40}" height="${ih}" fill="transparent"/>`;
   chartEl.insertAdjacentHTML("afterbegin",`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Andamento del prezzo minimo per città">${g}</svg>`);
-  const svg=chartEl.querySelector("svg"), xh=svg.querySelector("#xh");
-  const show=(clientX)=>{
-    const r=svg.getBoundingClientRect(), sx=(clientX-r.left)*W/r.width;
-    let i=dates.length===1?0:Math.round((sx-m.l)/(iw/(dates.length-1)));
-    i=Math.max(0,Math.min(dates.length-1,i));
+  const svg=chartEl.querySelector("svg"), xh=svg.querySelector("#xh"), hit=svg.querySelector("#hit");
+  hit.addEventListener("pointermove",e=>{
+    const r=svg.getBoundingClientRect(), sx=(e.clientX-r.left)*W/r.width;
+    let i=ds.length===1?0:Math.round((sx-m.l)/(iw/(ds.length-1))); i=Math.max(0,Math.min(ds.length-1,i));
     xh.setAttribute("x1",x(i)); xh.setAttribute("x2",x(i)); xh.setAttribute("opacity",1);
-    const rows=lines.map(l=>({o:l.o,p:l.pts[i]})).filter(r=>r.p).sort((a,b)=>a.p.v-b.p.v);
-    tip.innerHTML=`<b>${fmtD(dates[i])}</b>`+rows.map(r=>`<div><span><i style="background:${COLOR[r.o]}"></i>${r.o}</span><span>${eur(r.p.v)} <small style="color:var(--muted)">${r.p.f}</small></span></div>`).join("");
+    const rs=lines.map(l=>({o:l.o,p:l.pts[i]})).filter(r=>r.p).sort((a,b)=>a.p.v-b.p.v);
+    tip.innerHTML=`<b>${fmtD(ds[i])}</b>`+rs.map(r=>`<div><span><i style="background:${COLOR[r.o]}"></i>${r.o}</span><span>${eur(r.p.v)} <small class="m">${r.p.f}</small></span></div>`).join("");
     tip.style.opacity=1;
     const px=x(i)*r.width/W, tw=tip.offsetWidth;
-    tip.style.left=Math.min(Math.max(px+12, 0), r.width-tw)+"px";
-    if(px+12+tw>r.width) tip.style.left=Math.max(px-tw-12,0)+"px";
-    tip.style.top="8px";
-  };
-  const hide=()=>{tip.style.opacity=0; xh.setAttribute("opacity",0);};
-  const hit=svg.querySelector("#hit");
-  hit.addEventListener("pointermove",e=>show(e.clientX));
-  hit.addEventListener("pointerleave",hide);
-  // legenda e tabella
-  document.getElementById("legend").innerHTML=ORIGINS.map(o=>`<span><i style="background:${COLOR[o]}"></i>${o}</span>`).join("");
+    tip.style.left=(px+12+tw>r.width? Math.max(px-tw-12,0) : px+12)+"px"; tip.style.top="8px";
+  });
+  hit.addEventListener("pointerleave",()=>{tip.style.opacity=0;xh.setAttribute("opacity",0);});
   document.getElementById("chartTable").innerHTML=`<table><thead><tr><th>Data</th>${ORIGINS.map(o=>`<th>${o}</th>`).join("")}</tr></thead><tbody>`+
-    dates.map((d,i)=>`<tr><td>${fmtD(d)}</td>${lines.map(l=>`<td class="num">${l.pts[i]?eur(l.pts[i].v)+` <small style="color:var(--muted);font-weight:400">${l.pts[i].f}</small>`:"—"}</td>`).join("")}</tr>`).join("")+`</tbody></table>`;
+    ds.map((d,i)=>`<tr><td>${fmtD(d)}</td>${lines.map(l=>`<td>${l.pts[i]?`<span class="num">${eur(l.pts[i].v)}</span> <small class="m">${l.pts[i].f}</small>`:"—"}</td>`).join("")}</tr>`).join("")+`</tbody></table>`;
 }
-document.querySelectorAll(".controls button").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".controls button").forEach(x=>x.setAttribute("aria-pressed",x===b));
-  MODE=b.dataset.mode;draw(MODE);
-}));
-let MODE="min";draw(MODE);let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>draw(MODE),150)});
+function buttons(el,items,cur,onClick){
+  el.innerHTML=items.map(it=>`<button data-k="${it.k}" aria-pressed="${it.k===cur}">${it.lab}</button>`).join("");
+  el.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{el.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));onClick(b.dataset.k);}));
+}
+buttons(document.getElementById("chartModes"),CHART_MODES,MODE,k=>{MODE=k;draw();});
+draw(); let rt; addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(draw,150)});
 
-/* Tabelle */
-document.getElementById("best").innerHTML=`<table><thead><tr><th>Città</th><th>Prezzo</th><th>Andata / Ritorno</th><th>Durata A/R</th><th>Scali</th><th>Bagaglio</th><th>Link</th></tr></thead><tbody>`+
-  BEST.map(b=>`<tr><td><b>${b.o}</b></td><td><span class="num">${eur(b.p)}</span><br><small style="color:var(--text-2)">${b.f}</small></td>
-  <td><span class="nowrap">${b.a}</span><br><span class="nowrap">${b.r}</span></td>
-  <td><span class="nowrap">${b.dur}</span>${b.warn?`<br><span class="warn">⚠️ ${b.warn}</span>`:""}</td><td>${b.sc}</td><td>${b.bag}</td>
-  <td class="nowrap">${b.link?a(b.link,"Offerta")+"<br>":""}${a(b.gf,"Google Flights")}${b.alt?`<br><small>${a(b.alt,"Alt. Kiwi 641 €")}</small>`:""}</td></tr>`).join("")+`</tbody></table>`;
+/* ===== Migliori offerte ===== */
+function renderBest(pk){
+  const p=PERIODS.find(x=>x.k===pk);
+  document.getElementById("bestSub").textContent = pk==="feste"
+    ? "Viaggi interamente tra il 20 dicembre e il 10 gennaio, circa 2 settimane. Kiwi cerca su date flessibili; le altre fonti su date fisse."
+    : "Il prezzo più basso trovato, anche fuori dal periodo delle feste (tipicamente a gennaio).";
+  const list=ORIGINS.map(o=>minBy(flights.filter(r=>r.o===o&&r.eur!=null&&p.test(r)),r=>r.eur));
+  const body=list.map((r,i)=>{
+    if(!r) return `<tr><td><b>${ORIGINS[i]}</b></td><td colspan="6" class="m"><small class="m">nessun risultato</small></td></tr>`;
+    const w=warnings(r);
+    return `<tr><td><b>${r.o}</b></td><td><span class="num">${eur(r.eur)}</span><br><small class="m">${esc(r.f)}</small></td>
+      <td><span class="nowrap">${shortDT(r.and)}</span><br><span class="nowrap">${shortDT(r.rit)}</span></td>
+      <td><span class="nowrap">${esc(r.da||"—")} / ${esc(r.dr||"—")}</span>${w.length?`<br><span class="warn">⚠️ ${w.join(", ")}</span>`:""}</td>
+      <td>${esc(r.cs||"—")}</td><td>${r.bag===true?"stiva inclusa":r.bag===false?"no stiva":"non indicato"}</td>
+      <td class="nowrap">${r.link?A(r.link,"Offerta")+"<br>":""}${A(r.gf,"Google Flights")}</td></tr>`;
+  }).join("");
+  document.getElementById("best").innerHTML=`<table><thead><tr><th>Città</th><th>Prezzo</th><th>Andata / Ritorno</th><th>Durata A/R</th><th>Scali</th><th>Bagaglio</th><th>Link</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+buttons(document.getElementById("bestTabs"),PERIODS,"feste",renderBest); renderBest("feste");
 
-const cell=(v,fmt)=> typeof v==="string" ? `<span style="color:var(--muted)">${v}</span>` : `<span class="num">${fmt(v[0])}</span>${v[1]?" · "+a(v[1],"apri"):""}`;
-document.getElementById("sources").innerHTML=`<table><thead><tr><th>Città</th><th>Kiwi</th><th>lastminute</th><th>GoVola</th><th>SlickTrip (USD)</th><th>Turkish</th></tr></thead><tbody>`+
-  SOURCES.map(s=>`<tr><td><b>${s.o}</b></td><td>${cell(s.kiwi,eur)}</td><td>${cell(s.lm,eur)}</td><td>${cell(s.gv,eur)}</td><td>${cell(s.st,usd)}</td><td>${cell(s.tk,eur)}</td></tr>`).join("")+`</tbody></table>`;
+/* ===== Confronto fonti ===== */
+function renderSrc(pk){
+  const p=PERIODS.find(x=>x.k===pk);
+  const srcs=SOURCES.filter(s=>flights.some(r=>r.f===s&&p.test(r)));
+  const cell=(o,s)=>{
+    const c=flights.filter(r=>r.o===o&&r.f===s&&p.test(r));
+    if(!c.length) return `<small class="m">—</small>`;
+    const r = minBy(c,r=>r.eur??(r.usd*10));
+    const v = r.eur!=null?eur(r.eur):usd(r.usd);
+    return `<span class="num">${v}</span>${r.link?" · "+A(r.link,"apri"):""}`;
+  };
+  document.getElementById("sources").innerHTML = srcs.length ? `<table><thead><tr><th>Città</th>${srcs.map(s=>`<th>${s}${s==="SlickTrip"?" (USD)":""}</th>`).join("")}</tr></thead><tbody>`+
+    ORIGINS.map(o=>`<tr><td><b>${o}</b></td>${srcs.map(s=>`<td>${cell(o,s)}</td>`).join("")}</tr>`).join("")+`</tbody></table>` : `<div class="empty">Nessun dato.</div>`;
+}
+buttons(document.getElementById("srcTabs"),PERIODS,"feste",renderSrc); renderSrc("feste");
 
-document.getElementById("sivola").innerHTML=`<table><thead><tr><th>Partenza</th><th>Ritorno</th><th>Città</th><th>Prezzo</th><th>Età</th><th>Stato</th></tr></thead><tbody>`+
-  SIVOLA.map(s=>`<tr><td class="nowrap">${s.p}${s.t?` <span class="warn">${s.t}</span>`:""}</td><td class="nowrap">${s.r}</td><td>${s.c}</td><td class="num">${eur(s.e)}</td><td>${s.a}</td><td>${s.s}</td></tr>`).join("")+`</tbody></table>`;
+/* ===== Sivola ===== */
+const fmtDate = d => d? d.split("-").reverse().join("/") : "—";
+document.getElementById("sivola").innerHTML = sivola.length ? `<table><thead><tr><th>Partenza</th><th>Ritorno</th><th>Città</th><th>Prezzo</th><th>Età</th><th>Stato</th></tr></thead><tbody>`+
+  sivola.map(s=>{ const tag=/tag tema:\s*([^.;]+)/i.exec(s.note||""); return `<tr><td class="nowrap">${fmtDate(s.dp)}${tag?` <span class="warn">${esc(tag[1])}</span>`:""}</td><td class="nowrap">${fmtDate(s.rit)}</td><td>${esc(s.city)}</td><td class="num">${eur(s.eur)}</td><td>${esc(s.eta)}</td><td>${esc(s.stato)}</td></tr>`; }).join("")+`</tbody></table>` : `<div class="empty">Nessun dato.</div>`;
 </script>
 </body>
 </html>

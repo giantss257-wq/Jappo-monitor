@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ritmo</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#eef0f3;--card:#fff;--ink:#1b2430;--mut:#6b7686;--line:#dde1e7;--low:#e8b100;--ok:#1f9d55;--bonus:#2f7df6;--lav:#7a5af8;--app:#12a3a0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#12161c;--card:#1c222b;--ink:#e8ecf2;--mut:#93a0b2;--line:#2d3642}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#12161c;--card:#1c222b;--ink:#e8ecf2;--mut:#93a0b2;--line:#2d3642}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.4 Manrope,system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+h1{font-size:22px;font-weight:800;margin:0;letter-spacing:-.02em}
+.nav{display:flex;gap:6px;align-items:center}
+button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+button:focus-visible{outline:2px solid var(--bonus);outline-offset:2px}
+button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sub{color:var(--mut);font-size:13px}
+.bar{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px}
+.track{display:flex;height:14px;border-radius:7px;background:var(--line);overflow:hidden;margin-top:8px}
+.track i{display:block;height:100%}
+.lg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:8px}
+.lg b{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px}
+h2{font-size:14px;font-weight:600;color:var(--mut);margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.tile.run{border-color:var(--bonus)}
+.rw{position:relative;width:108px;height:108px}
+.rw svg{width:100%;height:100%;transform:rotate(-90deg)}
+.rw circle{fill:none;stroke-width:7;stroke-linecap:round}
+.ctr{position:absolute;inset:20px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;font-weight:800;font-size:15px;line-height:1.1;font-variant-numeric:tabular-nums}
+.ctr small{font-size:11px;font-weight:400;color:var(--mut)}
+.nm{font-weight:800}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row button{padding:3px 9px;font-size:13px}
+.chips button{font-size:12px;padding:2px 8px;color:var(--mut)}
+.chips button.on{background:var(--low);border-color:var(--low);color:#1b2430}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tw{overflow-x:auto}
+.tbl th,.tbl td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);font-size:14px}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl th{font-weight:600;color:var(--mut)}
+.d{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle}
+.st{position:fixed;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));font-size:12px;color:var(--mut);background:var(--card);border:1px solid var(--line);padding:3px 8px;border-radius:8px}
+</style></head><body><main>
+<header><h1>Ritmo</h1><div class="nav" id="nav"></div></header>
+<div id="app"></div></main><div class="st" id="st">caricamento…</div>
+<script>
+const M={idv:['Identità visiva studio','L','elementi definiti'],prop:['Proposte','L','proposte raffinate'],ann:['Annunci','L','annunci valutati o risposte'],doc:['Docenza','L','contatti o programmi'],net:['Networking','L','contatti o eventi'],ae:['After Effects','A','lezioni completate'],soc:['Social media','A','argomenti studiati'],dis:['Disegno','A','sketch'],tre:['Tecniche e trend','A','spunti salvati'],all:['Allenamento','T','modifiche al piano'],alp:['Alpinismo','T','argomenti studiati']};
+const S={1:[['idv',120],['soc',45],['doc',45],['dis',30]],2:[['ann',30],['prop',60],['ae',60],['doc',45],['tre',30]],3:[['idv',120],['soc',45],['net',45],['dis',30]],4:[['ann',60],['soc',45],['doc',90],['tre',30]],5:[['ann',60],['ae',60],['net',45],['dis',30]]};
+const F={1:[['alp',30]],2:[['all',20]],3:[['alp',30]],4:[['all',20]],5:[['all',20]]};
+const POOL=['ann','prop','tre','all','alp'];
+const WHY=['Imprevisto','Stanchezza','Poco tempo','Altro'];
+const DN=['domenica','lunedì','martedì','mercoledì','giovedì','venerdì','sabato'];
+const CC={L:'var(--lav)',A:'var(--app)',T:'var(--app)'};
+const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const pd=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const TODAY=ds(new Date());
+let days={},date=TODAY,view='oggi',db=null,loaded=false,chain=Promise.resolve();
+const $=id=>document.getElementById(id),setSt=t=>$('st').textContent=t;
+const get=(dt,id)=>Object.assign({sec:0,run:null,ex:0,g:0,w:''},(days[dt]&&days[dt].a&&days[dt].a[id])||{});
+const mins=e=>(e.sec+(e.run?(Date.now()-e.run)/1000:0))/60+e.ex;
+function mut(dt,id,fn){days[dt]=days[dt]||{a:{}};days[dt].a=days[dt].a||{};const e=get(dt,id);fn(e);days[dt].a[id]=e;save(dt);render()}
+function save(dt){const snap=JSON.parse(JSON.stringify(days[dt]));if(!db){setSt('solo in memoria');return}
+ chain=chain.then(()=>db.doc('days/'+dt).set(snap)).then(()=>setSt('salvato'),()=>setSt('non salvato'))}
+function toggle(id){const dt=date;if(dt!==TODAY)return;const a=(days[dt]&&days[dt].a)||{};
+ Object.keys(a).forEach(k=>{if(a[k].run&&k!==id)mut(dt,k,e=>{e.sec+=(Date.now()-e.run)/1000;e.run=null})});
+ mut(dt,id,e=>{if(e.run){e.sec+=(Date.now()-e.run)/1000;e.run=null}else e.run=Date.now()})}
+const plan=dt=>{const w=pd(dt).getDay();return w>=1&&w<=5?{main:S[w],free:F[w],pool:[]}:{main:[],free:[],pool:POOL.map(i=>[i,0])}};
+const fmt=m=>{const s=Math.floor(m*60),h=Math.floor(s/3600),mm=Math.floor(s%3600/60),ss=s%60;return(h?h+':'+String(mm).padStart(2,'0'):mm)+':'+String(ss).padStart(2,'0')};
+function tile(id,block,dt){const[n,c,gl]=M[id],e=get(dt,id),m=mins(e),Cm=188.5,Cb=238.8;
+ const f=block?Math.min(m/block,1):0,b=block?Math.min(Math.max(m-block,0)/block,1):Math.min(m/60,1);
+ const col=m>=block&&block?'var(--ok)':'var(--low)',bon=m>block,r=Math.round(m);
+ const chips=block&&m<block?`<div class="row chips">${WHY.map(w=>`<button data-a="w" data-id="${id}" data-v="${w}" class="${e.w===w?'on':''}">${w}</button>`).join('')}</div>`:'';
+ return `<div class="tile ${e.run?'run':''}"><div class="rw"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="30" stroke="var(--line)"/><circle cx="42" cy="42" r="30" stroke="${col}" stroke-dasharray="${f*Cm} ${Cm}"/><circle cx="42" cy="42" r="38" stroke="var(--bonus)" stroke-dasharray="${b*Cb} ${Cb}" style="stroke-width:4"/></svg>
+ <button class="ctr" data-a="t" data-id="${id}" ${dt!==TODAY?'disabled':''} aria-label="Timer ${n}">${fmt(m)}<small>${e.run?'pausa':'avvia'}</small></button></div>
+ <div class="nm">${n}</div><div class="sub">${r} / ${block||'bonus'} min${bon?' · +'+(r-block)+' bonus':''}</div>
+ <div class="row"><button data-a="m" data-id="${id}" data-d="-5">−5</button><button data-a="m" data-id="${id}" data-d="5">+5</button><button data-a="m" data-id="${id}" data-d="15">+15</button></div>
+ <div class="row sub"><span>${gl}</span><button data-a="g" data-id="${id}" data-d="-1">−</button><b>${e.g}</b><button data-a="g" data-id="${id}" data-d="1">+</button></div>${chips}</div>`}
+function oggi(){const p=plan(date),all=[...p.main,...p.pool];let base={L:0,A:0},bonus=0,tot=0,pl=0;
+ all.forEach(([id,b])=>{const m=mins(get(date,id)),c=M[id][1];base[c==='L'?'L':'A']+=Math.min(m,b);bonus+=Math.max(m-b,0);pl+=b});
+ tot=base.L+base.A+bonus;const sc=Math.max(300,tot),h=m=>Math.floor(m/60)+' h '+String(Math.round(m%60)).padStart(2,'0');
+ let o=`<div class="bar"><b>${h(tot)}</b> <span class="sub">su 5 h · pianificate ${h(pl)}</span><div class="track"><i style="width:${base.L/sc*100}%;background:var(--lav)"></i><i style="width:${base.A/sc*100}%;background:var(--app)"></i><i style="width:${bonus/sc*100}%;background:var(--bonus)"></i></div><div class="lg"><span><b style="background:var(--lav)"></b>lavoro</span><span><b style="background:var(--app)"></b>apprendimento</span><span><b style="background:var(--bonus)"></b>bonus</span></div></div>`;
+ if(p.main.length)o+=`<div class="grid">${p.main.map(([i,b])=>tile(i,b,date)).join('')}</div>`;
+ if(p.free.length)o+=`<h2>Fuori dalle 5 ore</h2><div class="grid">${p.free.map(([i,b])=>tile(i,b,date)).join('')}</div>`;
+ if(p.pool.length)o+=`<h2>Weekend: tempo extra, in quest’ordine</h2><div class="grid">${p.pool.map(([i,b])=>tile(i,b,date)).join('')}</div>`;
+ return o}
+function sett(){const d0=pd(date),w=d0.getDay()||7,mon=new Date(d0);mon.setDate(d0.getDate()-w+1);
+ const dts=[1,2,3,4,5].map(k=>{const x=new Date(mon);x.setDate(mon.getDate()+k-1);return ds(x)});
+ const ids=Object.keys(M);let tp=0,td=0;
+ const rows=ids.map(id=>{let pl=0,ok=0,mm=0;const cells=dts.map((dt,k)=>{const b=((S[k+1].concat(F[k+1])).find(x=>x[0]===id)||[0,0])[1],m=mins(get(dt,id));mm+=m;
+  if(!b){return `<td>${m>0?'<span class="d" style="background:var(--bonus)"></span>':'<span class="sub">·</span>'}</td>`}
+  pl++;if(m>=b)ok++;tp+=b;td+=Math.min(m,b);
+  const c=m>b?'var(--bonus)':m>=b?'var(--ok)':m>0?'var(--low)':dt<TODAY?'var(--mut)':'transparent';
+  return `<td><span class="d" style="background:${c};border:2px solid ${m>0||dt<TODAY?c:'var(--line)'}"></span></td>`}).join('');
+  return `<tr><td>${M[id][0]}</td>${cells}<td>${ok}/${pl}</td><td>${(mm/60).toFixed(1)} h</td></tr>`}).join('');
+ return `<div class="bar"><b>${(td/60).toFixed(1)} h</b> <span class="sub">fatte su ${(tp/60).toFixed(1)} h pianificate (bonus esclusi)</span></div><div class="tw"><table class="tbl"><tr><th>Attività</th>${['Lun','Mar','Mer','Gio','Ven'].map(x=>`<th>${x}</th>`).join('')}<th>Blocchi</th><th>Ore</th></tr>${rows}</table></div><div class="lg"><span><b style="background:var(--ok)"></b>minimo raggiunto</span><span><b style="background:var(--low)"></b>sotto il minimo</span><span><b style="background:var(--bonus)"></b>bonus</span><span><b style="background:var(--mut)"></b>non fatto</span></div>`}
+function render(){const d=pd(date);
+ $('nav').innerHTML=`<button data-a="n" data-d="-1" aria-label="Giorno precedente">‹</button><span><b>${DN[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}</b></span><button data-a="n" data-d="1" aria-label="Giorno successivo">›</button><button data-a="n" data-d="0">Oggi</button><button data-a="v" data-v="oggi" class="${view==='oggi'?'on':''}">Giorno</button><button data-a="v" data-v="sett" class="${view==='sett'?'on':''}">Settimana</button>`;
+ $('app').innerHTML=view==='oggi'?oggi():sett()}
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,id=b.dataset.id,v=b.dataset.v,dn=+b.dataset.d;
+ if(a==='t')toggle(id);
+ else if(a==='m')mut(date,id,e=>{e.ex=Math.max(0,e.ex+dn)});
+ else if(a==='g')mut(date,id,e=>{e.g=Math.max(0,e.g+dn)});
+ else if(a==='w')mut(date,id,e=>{e.w=e.w===v?'':v});
+ else if(a==='n'){if(dn===0)date=TODAY;else{const x=pd(date);x.setDate(x.getDate()+dn);date=ds(x)}render()}
+ else if(a==='v'){view=v;render()}});
+setInterval(()=>{const a=(days[date]&&days[date].a)||{};if(Object.keys(a).some(k=>a[k].run))render()},1000);
+render();
+(async()=>{let t=setTimeout(()=>setSt('dati non raggiungibili'),10000);
+ try{const c=window.claude&&await claude.use('db');if(!c){clearTimeout(t);setSt('solo in memoria');return}
+  db=c;c.collection('days').onSnapshot(s=>{clearTimeout(t);if(!loaded){loaded=true;s.docs.forEach(x=>{days[x.id]=x.data()});render()}setSt('salvato')},()=>{clearTimeout(t);setSt('errore di lettura')})}
+ catch(e){clearTimeout(t);setSt('solo in memoria')}})();
+</script></body></html>
